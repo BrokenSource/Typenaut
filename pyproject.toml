@@ -8,6 +8,7 @@ classifiers = ["Private :: Do Not Upload"]
 requires-python = ">=3.10"
 dependencies = [
     "attrs~=25.3.0",
+    "pypdfium2~=4.30.0",
     "typst~=0.13.5",
 ]
 

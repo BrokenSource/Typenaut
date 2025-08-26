@@ -12,5 +12,9 @@ class Color:
     def luma(self, value: int) -> Self:
         self.r, self.g, self.b = (value, value, value)
 
+    def white(self) -> Self:
+        self.r, self.g, self.b = (255, 255, 255)
+        return self
+
     def __str__(self) -> str:
         return f'rgb({self.r}, {self.g}, {self.b})'

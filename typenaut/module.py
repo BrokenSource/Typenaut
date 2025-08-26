@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import copy
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Optional, Self
 
 from attrs import Factory, define, field
 
@@ -14,20 +15,27 @@ if TYPE_CHECKING:
 @define
 class Module(ABC):
 
-    parent: Module = field(default=None, repr=False)
-    """Root project object"""
+    parent: Optional[Module] = field(default=None, repr=False)
+    """Parent module that contains the current one as child"""
+
+    document: Optional[Document] = field(default=None, repr=False)
+    """The root document this module belongs to"""
 
     def __attrs_post_init__(self):
+        from typenaut.document import Document
+
+        # Propagate root document reference
+        if (not isinstance(self, Document)):
+            self.document = (self.document or self)
+
+        # Automatically append us to content module
         if isinstance(self.parent, ChildrenModule):
             self.parent.add(self)
 
-    @property
-    def document(self) -> Document:
-        from typenaut.document import Document
-
-        while not isinstance(self, Document):
+    def nthparent(self, n: int) -> Optional[Module]:
+        """Get the Nth .parent chain module"""
+        for _ in range(n):
             self = self.parent
-
         return self
 
     @abstractmethod
@@ -37,6 +45,9 @@ class Module(ABC):
 
     def ucode(self) -> str:
         return ''.join(self.code())
+
+    def copy(self) -> Self:
+        return copy.deepcopy(self)
 
     # ------------------------------------------ #
     # Context
