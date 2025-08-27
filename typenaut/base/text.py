@@ -2,7 +2,6 @@ from collections.abc import Iterable
 from typing import Literal, Union
 
 from attrs import define
-
 from typenaut.base.color import Color
 from typenaut.module import FinalModule
 

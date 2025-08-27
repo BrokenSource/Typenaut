@@ -21,7 +21,7 @@ jobs:
         uses: astral-sh/setup-uv@v6
 
       - name: Make wheels
-        run: uv build --wheel
+        run: uv build --wheel --package ${{github.event.repository.name}}
 
       - name: Publish wheels
         if: ${{ inputs.publish }}

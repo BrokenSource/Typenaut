@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Iterable, Self
 
 from attrs import define
 
@@ -16,5 +16,5 @@ class Color:
         self.r, self.g, self.b = (255, 255, 255)
         return self
 
-    def __str__(self) -> str:
-        return f'rgb({self.r}, {self.g}, {self.b})'
+    def code(self) -> Iterable[str]:
+        yield f"rgb({self.r}, {self.g}, {self.b})"

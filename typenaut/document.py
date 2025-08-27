@@ -1,30 +1,33 @@
 import shutil
 import tempfile
 from collections.abc import Iterable
+from functools import partial
 from pathlib import Path
 
 import typst
 from attrs import Factory, define
 
+from typenaut.base.length import AbsoluteLength, Length
 from typenaut.module import ChildrenModule
 
 
 @define
 class Margin:
-    right:  float = 1.0
-    left:   float = 1.0
-    top:    float = 1.0
-    bottom: float = 1.0
+    right:  Length = Factory(lambda: AbsoluteLength(1.0))
+    left:   Length = Factory(lambda: AbsoluteLength(1.0))
+    top:    Length = Factory(lambda: AbsoluteLength(1.0))
+    bottom: Length = Factory(lambda: AbsoluteLength(1.0))
 
     @property
     def code(self) -> Iterable[str]:
         yield f"#set page(margin: ("
-        yield f"    right:  {self.right}cm,"
-        yield f"    left:   {self.left}cm,"
-        yield f"    top:    {self.top}cm,"
-        yield f"    bottom: {self.bottom}cm,"
+        yield f"    right:  {self.right.ucode()},"
+        yield f"    left:   {self.left.ucode()},"
+        yield f"    top:    {self.top.ucode()},"
+        yield f"    bottom: {self.bottom.ucode()},"
         yield f"))"
         yield f""
+
 
 @define
 class Document(ChildrenModule):
