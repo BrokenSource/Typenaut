@@ -13,7 +13,7 @@ class Length(Module):
 
 @define
 class AutoLength(Length):
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield "auto"
 
 # ---------------------------------------------------------------------------- #
@@ -23,7 +23,7 @@ class RelativeLength(Length):
     """Percentage relative to the container"""
     value: float = 0.0
 
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield f"{self.value}%"
 
 # ---------------------------------------------------------------------------- #
@@ -33,7 +33,7 @@ class FractionLength(Length):
     """Flex length relative to the container and other items"""
     value: float = 1.0
 
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield f"{self.value}fr"
 
     def __add__(self, other: Self) -> Self:
@@ -47,7 +47,7 @@ class AbsoluteLength(Length):
     value: float = 0.0
     """Length value in points"""
 
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield f'{self.value}pt'
 
     # ------------------------------------------ #

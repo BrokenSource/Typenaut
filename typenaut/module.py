@@ -17,12 +17,12 @@ class Module(ABC):
     # # Typst code
 
     @abstractmethod
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         """Final code written to the typst document"""
         ...
 
-    def ucode(self) -> str:
-        return ''.join(filter(None, self.code()))
+    def code(self) -> str:
+        return ''.join(filter(None, self.typst()))
 
     # # Quality of life
 

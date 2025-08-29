@@ -9,5 +9,5 @@ class Custom(Composite):
     """Inline a custom piece of code"""
     value: str = ""
 
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield str(self.value)

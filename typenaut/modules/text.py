@@ -28,10 +28,10 @@ class Text(Composite):
 
     font: str = Font.Libertinus
 
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield '#text('
         yield f'    font: "{denum(self.font)}",'
-        yield f'    fill: {self.color.ucode()},'
+        yield f'    fill: {self.color.code()},'
         yield f'    weight: "{self.weight}",'
         yield f')[{self.value}]'
 

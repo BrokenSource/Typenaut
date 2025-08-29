@@ -23,15 +23,15 @@ class Rectangle(Container):
     stroke: Stroke = Factory(stroke.default)
     """Stroke color of the rectangle"""
 
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield f"#rect("
-        yield f"    width: {self.width.ucode()},"
-        yield f"    height: {self.height.ucode()},"
-        yield f"    fill: {self.color.ucode()},"
-        yield f"    stroke: {self.stroke.ucode()},"
+        yield f"    width: {self.width.code()},"
+        yield f"    height: {self.height.code()},"
+        yield f"    fill: {self.color.code()},"
+        yield f"    stroke: {self.stroke.code()},"
         yield ")["
         for child in self.children:
-            yield from child.code()
+            yield from child.typst()
         yield "]"
 
 # ---------------------------------------------------------------------------- #

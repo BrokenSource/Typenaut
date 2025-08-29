@@ -13,8 +13,8 @@ class Stroke(Module):
     color: Color
     width: Length
 
-    def code(self) -> Iterable[str]:
-        yield f"{self.color.ucode()} + {self.width.ucode()}"
+    def typst(self) -> Iterable[str]:
+        yield f"{self.color.code()} + {self.width.code()}"
 
 # ---------------------------------------------------------------------------- #
 

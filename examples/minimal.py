@@ -10,7 +10,7 @@ def main():
     document = Minimal()
     document.build()
 
-    print("Code:", '\n'.join(document.code()))
+    print("Code:", '\n'.join(document.typst()))
     document.pdf(output="output.pdf")
 
 if __name__ == "__main__":

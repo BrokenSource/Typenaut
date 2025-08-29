@@ -13,7 +13,7 @@ class Angle(Module):
     value: float = 0.0
     """Angle value in degrees"""
 
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield f"{self.value}deg"
 
     # ------------------------------------------ #

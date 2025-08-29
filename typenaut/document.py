@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 import tempfile
 from collections.abc import Iterable
 from pathlib import Path
@@ -22,10 +23,10 @@ class Margin:
     @property
     def code(self) -> Iterable[str]:
         yield f"#set page(margin: ("
-        yield f"    right:  {self.right.ucode()},"
-        yield f"    left:   {self.left.ucode()},"
-        yield f"    top:    {self.top.ucode()},"
-        yield f"    bottom: {self.bottom.ucode()},"
+        yield f"    right:  {self.right.code()},"
+        yield f"    left:   {self.left.code()},"
+        yield f"    top:    {self.top.code()},"
+        yield f"    bottom: {self.bottom.code()},"
         yield f"))"
         yield f""
 
@@ -50,20 +51,28 @@ class Document(Container):
 
         shutil.rmtree(self.workspace, ignore_errors=True)
 
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield from self.margin.code
 
         for child in self.children:
-            yield from child.code()
+            yield from child.typst()
+
+    def code(self) -> str:
+        main = (self.workspace/"main.typ")
+        main.write_text('\n'.join(self.typst()), encoding="utf-8")
+
+        # Optional code formatting if available
+        if (typstyle := shutil.which("typstyle")):
+            subprocess.run((typstyle, "-i", str(main)))
+
+        return main.read_text(encoding="utf-8")
 
     def pdf(self,
         output: Optional[Path]=None,
     ) -> bytes:
-        main = (self.workspace/"main.typ")
-        main.write_text('\n'.join(self.code()))
-
+        self.code()
         return typst.compile(
-            input=main,
+            input=(self.workspace/"main.typ"),
             output=output,
             root=self.workspace,
             format="pdf",

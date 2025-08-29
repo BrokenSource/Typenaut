@@ -25,7 +25,7 @@ class Color(Module):
     # ------------------------------------------ #
     # Module implementation
 
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield "rgb("
         yield     f"{100.0*self.red}%, "
         yield     f"{100.0*self.green}%, "
