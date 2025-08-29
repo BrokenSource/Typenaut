@@ -70,6 +70,19 @@ class Color(Module):
         self.red, self.green, self.blue = value
 
     # ------------------------------------------ #
+    # LUMA
+
+    @staticmethod
+    def from_luma(value: float) -> Self:
+        """Get a grayscale color from a (0.0-1.0) luma value"""
+        return Color.from_rgb(red=value, green=value, blue=value)
+    
+    @staticmethod
+    def from_luma_u8(value: int) -> Self:
+        """Get a grayscale color from a (0-255) luma value"""
+        return Color.from_rgb_u8(red=value, green=value, blue=value)
+
+    # ------------------------------------------ #
     # Hexadecimal
 
     @classmethod
@@ -202,22 +215,32 @@ class Color(Module):
 # ---------------------------------------------------------------------------- #
 
 class color(StaticClass):
-    rgb    = Color.from_rgb
-    rgb_u8 = Color.from_rgb_u8
-    hsv    = Color.from_hsv
-
-    @staticmethod
-    def luma(value: float) -> Color:
-        """Get a grayscale color from a 0.0-1.0 luma value"""
-        return Color.from_rgb(red=value, green=value, blue=value)
-
-    @staticmethod
-    def luma_u8(value: int) -> Color:
-        """Get a grayscale color from a 0-255 luma value"""
-        return Color.from_rgb_u8(red=value, green=value, blue=value)
+    rgb     = Color.from_rgb
+    rgb_u8  = Color.from_rgb_u8
+    luma    = Color.from_luma
+    luma_u8 = Color.from_luma_u8
+    hex     = Color.from_hex
+    hsv     = Color.from_hsv
+    hsl     = Color.from_hsl
 
     # # Predefined Colors
 
-    white       = lambda: Color.from_rgb(1.0, 1.0, 1.0)
-    black       = lambda: Color.from_rgb(0.0, 0.0, 0.0)
-    transparent = lambda: Color.from_rgb(0.0, 0.0, 0.0, 0.0)
+    none    = lambda: Color.from_hex("#00000000")
+    black   = lambda: Color.from_hex("#000000")
+    gray    = lambda: Color.from_hex("#AAAAAA")
+    silver  = lambda: Color.from_hex("#DDDDDD")
+    white   = lambda: Color.from_hex("#FFFFFF")
+    navy    = lambda: Color.from_hex("#001F3F")
+    blue    = lambda: Color.from_hex("#0074D9")
+    aqua    = lambda: Color.from_hex("#7fDBFF")
+    teal    = lambda: Color.from_hex("#39CCCC")
+    eastern = lambda: Color.from_hex("#239DAD")
+    purple  = lambda: Color.from_hex("#B10DC9")
+    fuchsia = lambda: Color.from_hex("#F012BE")
+    maroon  = lambda: Color.from_hex("#85144B")
+    red     = lambda: Color.from_hex("#FF4136")
+    orange  = lambda: Color.from_hex("#FF851B")
+    yellow  = lambda: Color.from_hex("#FFDC00")
+    olive   = lambda: Color.from_hex("#3D9970")
+    green   = lambda: Color.from_hex("#2ECC40")
+    lime    = lambda: Color.from_hex("#01FF70")

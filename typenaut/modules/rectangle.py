@@ -17,7 +17,7 @@ class Rectangle(Container):
     height: Length = Factory(length.auto)
     """Vertical length of the rectangle"""
 
-    color: Color = Factory(color.transparent)
+    color: Color = Factory(color.none)
     """Fill color of the rectangle"""
 
     stroke: Stroke = Factory(stroke.default)
