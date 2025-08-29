@@ -1,5 +1,4 @@
-import math
-from typing import Iterable, Self
+from typing import Iterable
 
 from attrs import Factory, define
 from typenaut import StaticClass

@@ -2,11 +2,11 @@ from typing import Iterable, Self
 
 from attrs import define
 from typenaut import StaticClass
-from typenaut.module import Composite
+from typenaut.module import Module
 
 
 @define
-class Length(Composite):
+class Length(Module):
     ...
 
 # ---------------------------------------------------------------------------- #
@@ -43,28 +43,12 @@ class FractionLength(Length):
 
 @define
 class AbsoluteLength(Length):
+
     value: float = 0.0
-    """Length value in centimeters"""
+    """Length value in points"""
 
     def code(self) -> Iterable[str]:
-        yield f'{self.value}cm'
-
-    # ------------------------------------------ #
-    # Centimeters
-
-    @classmethod
-    def from_cm(cls, value: float) -> Self:
-        self = cls()
-        self.cm = value
-        return self
-
-    @property
-    def cm(self) -> float:
-        return self.value
-
-    @cm.setter
-    def cm(self, value: float):
-        self.value = value
+        yield f'{self.value}pt'
 
     # ------------------------------------------ #
     # Points unit, common in typography
@@ -77,15 +61,70 @@ class AbsoluteLength(Length):
 
     @property
     def pt(self) -> float:
-        return (self.value * 28.3465)
+        return self.value
 
     @pt.setter
-    def pt(self, value: float):
-        self.value = (value / 28.3465)
+    def pt(self, pt: float):
+        self.value = pt
+
+    # ------------------------------------------ #
+    # Centimeters
+
+    @classmethod
+    def from_cm(cls, value: float) -> Self:
+        self = cls()
+        self.cm = value
+        return self
+
+    @property
+    def cm(self) -> float:
+        return (self.value / 28.3465)
+
+    @cm.setter
+    def cm(self, cm: float):
+        self.value = (cm * 28.3465)
+
+    # ------------------------------------------ #
+    # Milimeters
+
+    @classmethod
+    def from_mm(cls, value: float) -> Self:
+        self = cls()
+        self.mm = value
+        return self
+
+    @property
+    def mm(self) -> float:
+        return (self.cm * 10)
+
+    @mm.setter
+    def mm(self, mm: float):
+        self.cm = (mm / 10)
+
+    # ------------------------------------------ #
+    # Inches
+
+    @classmethod
+    def from_inch(cls, value: float) -> Self:
+        self = cls()
+        self.inch = value
+        return self
+
+    @property
+    def inch(self) -> float:
+        return (self.cm / 2.54)
+
+    @inch.setter
+    def inch(self, inch: float):
+        self.cm = (inch * 2.54)
 
 # ---------------------------------------------------------------------------- #
 
 class length(StaticClass):
+    auto = AutoLength
+    rel  = RelativeLength
+    fr   = FractionLength
     pt   = AbsoluteLength.from_pt
     cm   = AbsoluteLength.from_cm
-    auto = AutoLength
+    mm   = AbsoluteLength.from_mm
+    inch = AbsoluteLength.from_inch

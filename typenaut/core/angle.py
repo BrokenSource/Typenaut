@@ -9,25 +9,40 @@ from typenaut.module import Module
 
 @define
 class Angle(Module):
-    degrees: float = 0.0
+
+    value: float = 0.0
+    """Angle value in degrees"""
 
     def code(self) -> Iterable[str]:
-        yield f"{self.degrees}deg"
-
-    @classmethod
-    def from_degrees(cls, value: float) -> Self:
-        return cls(degrees=value)
+        yield f"{self.value}deg"
 
     # ------------------------------------------ #
     # Special functions
 
     def flip(self) -> Self:
-        self.degrees *= -1
+        self.value *= -1
         return self
 
     def normalize(self) -> Self:
-        self.degrees %= 360
+        self.value %= 360
         return self
+
+    # ------------------------------------------ #
+    # Degrees
+
+    @classmethod
+    def from_degrees(cls, value: float) -> Self:
+        self = cls()
+        self.value = value
+        return self
+
+    @property
+    def degrees(self) -> float:
+        return self.value
+
+    @degrees.setter
+    def degrees(self, degrees: float):
+        self.value = degrees
 
     # ------------------------------------------ #
     # Radians
@@ -40,11 +55,11 @@ class Angle(Module):
 
     @property
     def radians(self) -> float:
-        return math.radians(self.degrees)
+        return math.radians(self.value)
 
     @radians.setter
-    def radians(self, value: float):
-        self.degrees = math.degrees(value)
+    def radians(self, radians: float):
+        self.value = math.degrees(radians)
 
 # ---------------------------------------------------------------------------- #
 
@@ -54,16 +69,16 @@ class angle(StaticClass):
 
     @staticmethod
     def zero() -> Angle:
-        return Angle(degrees=0.0)
+        return Angle(value=0.0)
 
     @staticmethod
     def diagonal() -> Angle:
-        return Angle(degrees=45.0)
+        return Angle(value=45.0)
 
     @staticmethod
     def right() -> Angle:
-        return Angle(degrees=90.0)
+        return Angle(value=90.0)
 
     @staticmethod
     def straight() -> Angle:
-        return Angle(degrees=180.0)
+        return Angle(value=180.0)
