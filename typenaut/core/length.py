@@ -1,6 +1,7 @@
 from typing import Iterable, Self
 
 from attrs import define
+from typenaut import StaticClass
 from typenaut.module import Composite
 
 
@@ -8,12 +9,14 @@ from typenaut.module import Composite
 class Length(Composite):
     ...
 
+# ---------------------------------------------------------------------------- #
 
 @define
 class AutoLength(Length):
     def code(self) -> Iterable[str]:
         yield "auto"
 
+# ---------------------------------------------------------------------------- #
 
 @define
 class RelativeLength(Length):
@@ -23,6 +26,7 @@ class RelativeLength(Length):
     def code(self) -> Iterable[str]:
         yield f"{self.value}%"
 
+# ---------------------------------------------------------------------------- #
 
 @define
 class FractionLength(Length):
@@ -35,6 +39,7 @@ class FractionLength(Length):
     def __add__(self, other: Self) -> Self:
         return FractionLength(self.value + other.value)
 
+# ---------------------------------------------------------------------------- #
 
 @define
 class AbsoluteLength(Length):
@@ -47,20 +52,28 @@ class AbsoluteLength(Length):
     # ------------------------------------------ #
     # Centimeters
 
+    @classmethod
+    def from_cm(cls, value: float) -> Self:
+        self = cls()
+        self.cm = value
+        return self
+
     @property
     def cm(self) -> float:
         return self.value
 
     @cm.setter
     def cm(self, value: float):
-        self.set_cm(value)
-
-    def set_cm(self, value: float) -> Self:
         self.value = value
-        return self
 
     # ------------------------------------------ #
     # Points unit, common in typography
+
+    @classmethod
+    def from_pt(cls, value: float) -> Self:
+        self = cls()
+        self.pt = value
+        return self
 
     @property
     def pt(self) -> float:
@@ -68,8 +81,11 @@ class AbsoluteLength(Length):
 
     @pt.setter
     def pt(self, value: float):
-        self.set_pt(value)
-
-    def set_pt(self, value: float) -> Self:
         self.value = (value / 28.3465)
-        return self
+
+# ---------------------------------------------------------------------------- #
+
+class length(StaticClass):
+    pt   = AbsoluteLength.from_pt
+    cm   = AbsoluteLength.from_cm
+    auto = AutoLength

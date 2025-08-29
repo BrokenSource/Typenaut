@@ -16,4 +16,5 @@ from typenaut.core.angle import Angle, angle
 from typenaut.core.color import Color, color
 from typenaut.document import Document
 from typenaut.module import Composite, Container, Module
+from typenaut.modules.rectangle import Rectangle, rectangle
 from typenaut.modules.text import Text, text

@@ -22,7 +22,7 @@ class Font(Enum):
 class Text(Composite):
     value: str = ""
 
-    color: Color = Factory(color.white)
+    color: Color = Factory(color.black)
 
     weight: Union[Literal["regular", "bold"], int] = "regular"
 

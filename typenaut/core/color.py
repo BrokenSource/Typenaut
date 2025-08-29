@@ -83,10 +83,10 @@ class Color(Module):
     def hex(self) -> str:
         """Get the color as a hex string"""
         return ("#"
-            f"{int(255*self.red):02x}"
-            f"{int(255*self.green):02x}"
-            f"{int(255*self.blue):02x}"
-            f"{int(255*self.alpha):02x}"
+            f"{int(255*self.red):02X}"
+            f"{int(255*self.green):02X}"
+            f"{int(255*self.blue):02X}"
+            f"{int(255*self.alpha):02X}"
         )
 
     @hex.setter
@@ -218,4 +218,6 @@ class color(StaticClass):
 
     # # Predefined Colors
 
-    white = lambda: Color.from_rgb(1.0, 1.0, 1.0)
+    white       = lambda: Color.from_rgb(1.0, 1.0, 1.0)
+    black       = lambda: Color.from_rgb(0.0, 0.0, 0.0)
+    transparent = lambda: Color.from_rgb(0.0, 0.0, 0.0, 0.0)
