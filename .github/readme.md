@@ -12,7 +12,7 @@
 </div>
 
 > [!IMPORTANT]
-> This project is under active development. While basic functionality works, most features are missing, no documentation exists, and anything may change!
+> This project is under active development. While basic functionality works, most features are missing, no documentation exists, and anything may, and will, change anytime!
 
 ## 🔥 Description
 

@@ -7,8 +7,8 @@ from pathlib import Path
 import typst
 from attrs import Factory, define
 
-from typenaut.base.length import AbsoluteLength, Length
-from typenaut.module import ChildrenModule
+from typenaut.core.length import AbsoluteLength, Length
+from typenaut.module import Container
 
 
 @define
@@ -30,7 +30,7 @@ class Margin:
 
 
 @define
-class Document(ChildrenModule):
+class Document(Container):
     margin: Margin = Factory(Margin)
 
     workspace: Path = Factory(lambda: Path(tempfile.mkdtemp(prefix=f"{__package__}-")))

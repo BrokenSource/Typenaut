@@ -1,32 +1,40 @@
 from collections.abc import Iterable
+from enum import Enum
 from typing import Literal, Union
 
-from attrs import define
-from typenaut.base.color import Color
-from typenaut.module import FinalModule
+from attrs import Factory, define
+from typenaut import StaticClass, denum
+from typenaut.core.color import Color, color
+from typenaut.module import Composite
 
 
-# Idea: Auto download fonts?
-class Font:
+class Font(Enum):
     Libertinus: str = "Libertinus Serif"
     RobotoSlab: str = "Roboto Slab"
     Roboto:     str = "Roboto"
     Nunito:     str = "Nunito"
 
+    def download(self) -> None:
+        raise NotImplementedError
+
 
 @define
-class Text(FinalModule):
+class Text(Composite):
     value: str = ""
 
-    # color: Color = Color.white()
+    color: Color = Factory(color.white)
 
     weight: Union[Literal["regular", "bold"], int] = "regular"
-    """Whether to make the text thicker"""
 
     font: str = Font.Libertinus
 
     def code(self) -> Iterable[str]:
         yield '#text('
-        yield f'    font: "{self.font}",'
+        yield f'    font: "{denum(self.font)}",'
+        yield f'    fill: {self.color.ucode()},'
         yield f'    weight: "{self.weight}",'
         yield f')[{self.value}]'
+
+
+class text(StaticClass):
+    ...

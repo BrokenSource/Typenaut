@@ -1,11 +1,11 @@
 from typing import Iterable, Self
 
 from attrs import define
-from typenaut.module import FinalModule
+from typenaut.module import Composite
 
 
 @define
-class Length(FinalModule):
+class Length(Composite):
     ...
 
 

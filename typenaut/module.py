@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import copy
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
@@ -14,11 +12,36 @@ if TYPE_CHECKING:
 
 @define
 class Module(ABC):
+    """Base module class that outputs some typst code"""
 
-    parent: Optional[Module] = field(default=None, repr=False)
-    """Parent module that contains the current one as child"""
+    # # Typst code
 
-    document: Optional[Document] = field(default=None, repr=False)
+    @abstractmethod
+    def code(self) -> Iterable[str]:
+        """Final code written to the typst document"""
+        ...
+
+    def ucode(self) -> str:
+        return ''.join(filter(None, self.code()))
+
+    # # Quality of life
+
+    def copy(self, **update: dict) -> Self:
+        """Get a copy with updated values from this module"""
+        other = copy.deepcopy(self)
+        for key, value in update.items():
+            setattr(other, key, value)
+        return other
+
+# ---------------------------------------------------------------------------- #
+
+@define
+class Composite(Module):
+
+    parent: Optional[Self] = field(default=None, repr=False)
+    """Parent module that owns the current one as child"""
+
+    document: Optional["Document"] = field(default=None, repr=False)
     """The root document this module belongs to"""
 
     def __attrs_post_init__(self):
@@ -28,8 +51,8 @@ class Module(ABC):
         if (not isinstance(self, Document)):
             self.document = (self.document or self)
 
-        # Automatically append us to content module
-        if isinstance(self.parent, ChildrenModule):
+        # Automatically append to parent container
+        if isinstance(self.parent, Container):
             self.parent.add(self)
 
     def nthparent(self, n: int) -> Optional[Module]:
@@ -38,35 +61,14 @@ class Module(ABC):
             self = self.parent
         return self
 
-    @abstractmethod
-    def code(self) -> Iterable[str]:
-        """Final code written to the typst document"""
-        ...
-
-    def ucode(self) -> str:
-        return ''.join(self.code())
-
-    def copy(self) -> Self:
-        return copy.deepcopy(self)
-
-    # ------------------------------------------ #
-    # Context
-
-    def __enter__(self) -> Self:
-        return self
-
-    def __exit__(self, *args):
-        # self.parent.add(self)
-        pass
-
 # ---------------------------------------------------------------------------- #
 
 @define
-class ChildrenModule(Module):
+class Container(Composite):
     """A module which may contain other ones within"""
 
     def __attrs_post_init__(self):
-        Module.__attrs_post_init__(self)
+        Composite.__attrs_post_init__(self)
 
     children: list[Self] = Factory(list)
     """List of modules"""
@@ -76,9 +78,8 @@ class ChildrenModule(Module):
         child.parent = self
         return self
 
-# ---------------------------------------------------------------------------- #
+    def __enter__(self) -> Self:
+        return self
 
-@define
-class FinalModule(Module):
-    """A module which does not """
-    ...
+    def __exit__(self, *args):
+        pass
