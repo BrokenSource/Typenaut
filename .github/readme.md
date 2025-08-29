@@ -12,11 +12,25 @@
 </div>
 
 > [!IMPORTANT]
-> This project is under active development. While basic functionality works, most features are missing, no documentation exists, and anything may, and will, change anytime!
+> This project is under active development. While basic functionality works, most features are missing, no documentation exists, and anything may (and will) change anytime! Feedback is welcome 🙂
 
 ## 🔥 Description
 
 A new experiment on typst metaprogramming within python for heavy templating.
+
+```python
+from typenaut import Document, Rectangle, Text
+
+class Minimal(Document):
+    def build(self):
+        with Rectangle(self) as rect:
+            Text(rect, value="Hi, I'm inside the rectangle")
+
+# Automated usage!
+document = Minimal()
+document.build()
+document.pdf(output="output.pdf")
+```
 
 ## 📦 Installation
 
@@ -24,7 +38,11 @@ A new experiment on typst metaprogramming within python for heavy templating.
 
 ## 🚀 Usage
 
-> See the [examples](./examples) directory until more documentation is available.
+Your best chance is on exploring the [**examples**](../examples) directory likely for a good while.
+
+- Upstream [typst](https://typst.app/docs/) documentation is always a valuable resource!
+
+<sup><b>Note:</b> I really do not have the time to write structured documentation, but the code contains quality type hints and docstrings.</sup>
 
 ## ⚖️ License
 

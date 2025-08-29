@@ -1,22 +1,23 @@
 import shutil
 import tempfile
 from collections.abc import Iterable
-from functools import partial
 from pathlib import Path
+from typing import Optional
 
 import typst
 from attrs import Factory, define
+from PIL.Image import Image as ImageType
 
-from typenaut.core.length import AbsoluteLength, Length
+from typenaut.core.length import Length, length
 from typenaut.module import Container
 
 
 @define
 class Margin:
-    right:  Length = Factory(lambda: AbsoluteLength(1.0))
-    left:   Length = Factory(lambda: AbsoluteLength(1.0))
-    top:    Length = Factory(lambda: AbsoluteLength(1.0))
-    bottom: Length = Factory(lambda: AbsoluteLength(1.0))
+    right:  Length = Factory(length.auto)
+    left:   Length = Factory(length.auto)
+    top:    Length = Factory(length.auto)
+    bottom: Length = Factory(length.auto)
 
     @property
     def code(self) -> Iterable[str]:
@@ -55,11 +56,20 @@ class Document(Container):
         for child in self.children:
             yield from child.code()
 
-    def pdf(self) -> bytes:
+    def pdf(self,
+        output: Optional[Path]=None,
+    ) -> bytes:
         main = (self.workspace/"main.typ")
         main.write_text('\n'.join(self.code()))
 
         return typst.compile(
             input=main,
+            output=output,
             root=self.workspace,
+            format="pdf",
         )
+
+    def png(self,
+        ppi: int=144,
+    ) -> ImageType:
+        raise NotImplementedError
