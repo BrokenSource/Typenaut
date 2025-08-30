@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from enum import Enum
+from functools import partial
 from typing import Literal, Union
 
 from attrs import Factory, define
@@ -30,11 +31,11 @@ class Text(Composite):
 
     def typst(self) -> Iterable[str]:
         yield '#text('
-        yield f'    font: "{denum(self.font)}",'
-        yield f'    fill: {self.color.code()},'
-        yield f'    weight: "{self.weight}",'
+        yield   f'font: "{denum(self.font)}",'
+        yield   f'fill: {self.color.code()},'
+        yield   f'weight: "{self.weight}",'
         yield f')[{self.value}]'
 
 
 class text(StaticClass):
-    ...
+    libertinus = partial(Text, font=Font.Libertinus)

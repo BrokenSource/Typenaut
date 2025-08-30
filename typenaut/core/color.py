@@ -27,10 +27,10 @@ class Color(Module):
 
     def typst(self) -> Iterable[str]:
         yield "rgb("
-        yield     f"{100.0*self.red}%, "
-        yield     f"{100.0*self.green}%, "
-        yield     f"{100.0*self.blue}%, "
-        yield     f"{100.0*self.alpha}%"
+        yield     f"{100.0*self.red:.2f}%,"
+        yield     f"{100.0*self.green:.2f}%,"
+        yield     f"{100.0*self.blue:.2f}%,"
+        yield     f"{100.0*self.alpha:.2f}%"
         yield ")"
 
     # ------------------------------------------ #
@@ -76,7 +76,7 @@ class Color(Module):
     def from_luma(value: float) -> Self:
         """Get a grayscale color from a (0.0-1.0) luma value"""
         return Color.from_rgb(red=value, green=value, blue=value)
-    
+
     @staticmethod
     def from_luma_u8(value: int) -> Self:
         """Get a grayscale color from a (0-255) luma value"""

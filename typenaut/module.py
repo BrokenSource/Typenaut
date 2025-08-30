@@ -16,6 +16,10 @@ class Module(ABC):
 
     # # Typst code
 
+    def imports(self) -> Iterable[str]:
+        """Optional imports for the typst document"""
+        yield ""
+
     @abstractmethod
     def typst(self) -> Iterable[str]:
         """Final code written to the typst document"""
@@ -72,6 +76,13 @@ class Container(Composite):
 
     children: list[Self] = Factory(list)
     """List of modules"""
+
+    def traverse(self) -> Iterable[Module]:
+        """Recursively yields all modules"""
+        for child in self.children:
+            if isinstance(child, Container):
+                yield from child.traverse()
+        yield self
 
     def add(self, child: Self) -> Self:
         self.children.append(child)

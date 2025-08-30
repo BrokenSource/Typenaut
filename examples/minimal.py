@@ -9,9 +9,8 @@ class Minimal(Document):
 def main():
     document = Minimal()
     document.build()
-
-    print("Code:", '\n'.join(document.typst()))
     document.pdf(output="output.pdf")
+    print(document.code())
 
 if __name__ == "__main__":
     main()

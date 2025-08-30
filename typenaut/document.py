@@ -23,12 +23,11 @@ class Margin:
     @property
     def code(self) -> Iterable[str]:
         yield f"#set page(margin: ("
-        yield f"    right:  {self.right.code()},"
-        yield f"    left:   {self.left.code()},"
-        yield f"    top:    {self.top.code()},"
-        yield f"    bottom: {self.bottom.code()},"
+        yield   f"right:  {self.right.code()},"
+        yield   f"left:   {self.left.code()},"
+        yield   f"top:    {self.top.code()},"
+        yield   f"bottom: {self.bottom.code()},"
         yield f"))"
-        yield f""
 
 
 @define
@@ -52,6 +51,12 @@ class Document(Container):
         shutil.rmtree(self.workspace, ignore_errors=True)
 
     def typst(self) -> Iterable[str]:
+
+        # Organize imports at the start
+        for module in self.traverse():
+            yield from module.imports()
+
+        # Global page configuration
         yield from self.margin.code
 
         for child in self.children:
