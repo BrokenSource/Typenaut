@@ -1,8 +1,10 @@
 from typing import Iterable
 
 from attrs import Factory, define
+
 from typenaut import StaticClass
 from typenaut.core.color import Color, color
+from typenaut.core.function import Function
 from typenaut.core.length import Length, length
 from typenaut.core.stroke import Stroke, stroke
 from typenaut.module import Container
@@ -24,15 +26,25 @@ class Rectangle(Container):
     """Stroke color of the rectangle"""
 
     def typst(self) -> Iterable[str]:
-        yield f"#rect("
-        yield f"    width: {self.width.code()},"
-        yield f"    height: {self.height.code()},"
-        yield f"    fill: {self.color.code()},"
-        yield f"    stroke: {self.stroke.code()},"
-        yield ")["
-        for child in self.children:
-            yield from child.typst()
-        yield "]"
+        # yield f"#rect("
+        # yield f"    width: {self.width.code()},"
+        # yield f"    height: {self.height.code()},"
+        # yield f"    fill: {self.color.code()},"
+        # yield f"    stroke: {self.stroke.code()},"
+        # yield ")["
+        # for child in self.children:
+        #     yield from child.typst()
+        # yield "]"
+        yield from Function(
+            name="rect",
+            kwargs=dict(
+                width=self.width,
+                height=self.height,
+                fill=self.color,
+                stroke=self.stroke,
+            ),
+            body=self.children,
+        ).call()
 
 # ---------------------------------------------------------------------------- #
 

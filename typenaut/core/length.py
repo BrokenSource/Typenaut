@@ -1,6 +1,7 @@
 from typing import Iterable, Self
 
 from attrs import define
+
 from typenaut import StaticClass
 from typenaut.module import Module
 

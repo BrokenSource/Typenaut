@@ -1,6 +1,7 @@
 from typing import Iterable
 
 from attrs import define
+
 from typenaut import StaticClass
 from typenaut.core.color import Color, color
 from typenaut.core.length import Length, length
