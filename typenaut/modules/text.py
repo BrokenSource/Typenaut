@@ -7,7 +7,7 @@ from attrs import Factory, define
 
 from typenaut import StaticClass, denum
 from typenaut.core import Color, Function, color
-from typenaut.module import Composite
+from typenaut.module import Module
 
 
 class Font(Enum):
@@ -21,14 +21,15 @@ class Font(Enum):
 
 
 @define
-class Text(Composite):
+class Text(Module):
+
     value: str = ""
+
+    font: str = Font.Libertinus
 
     color: Color = Factory(color.black)
 
     weight: Union[Literal["regular", "bold"], int] = "regular"
-
-    font: str = Font.Libertinus
 
     def typst(self) -> Iterable[str]:
         # yield '#text('

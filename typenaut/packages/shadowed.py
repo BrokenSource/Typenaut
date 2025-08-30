@@ -8,13 +8,13 @@ from typing import Iterable
 
 from attrs import Factory, define
 
-from typenaut import Container
+from typenaut import Composite
 from typenaut.core.color import Color, color
 from typenaut.core.length import Length, length
 
 
 @define
-class Shadowed(Container):
+class Shadowed(Composite):
 
     version: str = "0.2.0"
     """Package version"""

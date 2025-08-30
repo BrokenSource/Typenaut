@@ -7,12 +7,13 @@ from typenaut.core.color import Color, color
 from typenaut.core.function import Function
 from typenaut.core.length import Length, length
 from typenaut.core.stroke import Stroke, stroke
-from typenaut.module import Container
+from typenaut.module import Composite
 
 # ---------------------------------------------------------------------------- #
 
 @define
-class Rectangle(Container):
+class Rectangle(Composite):
+
     width: Length = Factory(length.auto)
     """Horizontal length of the rectangle"""
 

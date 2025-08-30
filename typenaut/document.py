@@ -10,7 +10,7 @@ from attrs import Factory, define
 from PIL.Image import Image as ImageType
 
 from typenaut.core.length import Length, length
-from typenaut.module import Container
+from typenaut.module import Composite
 
 
 @define
@@ -31,7 +31,7 @@ class Margin:
 
 
 @define
-class Document(Container):
+class Document(Composite):
     margin: Margin = Factory(Margin)
 
     workspace: Path = Factory(lambda: Path(tempfile.mkdtemp(prefix=f"{__package__}-")))

@@ -14,6 +14,23 @@ if TYPE_CHECKING:
 class Module(ABC):
     """Base module class that outputs some typst code"""
 
+    parent: Optional[Self] = field(default=None, repr=False)
+    """Parent module that owns the current one as child"""
+
+    document: Optional["Document"] = field(default=None, repr=False)
+    """The root document this module belongs to"""
+
+    def __attrs_post_init__(self):
+        from typenaut.document import Document
+
+        # Propagate root document reference
+        if (not isinstance(self, Document)):
+            self.document = (self.document or self)
+
+        # Automatically append to parent container
+        if isinstance(self.parent, Composite):
+            self.parent.add(self)
+
     # # Typst code
 
     def imports(self) -> Iterable[str]:
@@ -37,29 +54,7 @@ class Module(ABC):
             setattr(other, key, value)
         return other
 
-# ---------------------------------------------------------------------------- #
-
-@define
-class Composite(Module):
-
-    parent: Optional[Self] = field(default=None, repr=False)
-    """Parent module that owns the current one as child"""
-
-    document: Optional["Document"] = field(default=None, repr=False)
-    """The root document this module belongs to"""
-
-    def __attrs_post_init__(self):
-        from typenaut.document import Document
-
-        # Propagate root document reference
-        if (not isinstance(self, Document)):
-            self.document = (self.document or self)
-
-        # Automatically append to parent container
-        if isinstance(self.parent, Container):
-            self.parent.add(self)
-
-    def nthparent(self, n: int) -> Optional[Module]:
+    def nthparent(self, n: int) -> Optional[Self]:
         """Get the Nth .parent chain module"""
         for _ in range(n):
             self = self.parent
@@ -68,11 +63,8 @@ class Composite(Module):
 # ---------------------------------------------------------------------------- #
 
 @define
-class Container(Composite):
+class Composite(Module):
     """A module which may contain other ones within"""
-
-    def __attrs_post_init__(self):
-        Composite.__attrs_post_init__(self)
 
     children: list[Self] = Factory(list)
     """List of modules"""
@@ -80,7 +72,7 @@ class Container(Composite):
     def traverse(self) -> Iterable[Module]:
         """Recursively yields all modules"""
         for child in self.children:
-            if isinstance(child, Container):
+            if isinstance(child, Composite):
                 yield from child.traverse()
         yield self
 
