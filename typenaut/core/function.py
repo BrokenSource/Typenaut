@@ -3,28 +3,33 @@ from typing import Any, Iterable, Optional
 from attrs import Factory, define
 
 from typenaut import denum
-from typenaut.module import Module
+from typenaut.module import CoreModule
 
 
 @define
-class Function:
+class Function(CoreModule):
     name: str
     args: list[Any] = Factory(list)
     kwargs: dict[str, Any] = Factory(dict)
-    body: Optional[Iterable[Module]] = None
+    body: Optional[Iterable[CoreModule]] = None
 
     def any2typ(self, value: Any) -> Any:
         value = denum(value)
 
-        if isinstance(value, str):
-            return f'"{value}"'
+        if (value is None):
+            return "none"
+        elif isinstance(value, str):
+            return f'{value}'
         elif isinstance(value, bool):
             return str(value).lower()
         elif isinstance(value, (int, float)):
             return value
-        elif isinstance(value, Module):
+        elif isinstance(value, CoreModule):
             return value.code()
         raise TypeError(f"Cannot convert {type(value)} to typst code")
+
+    def typst(self) -> Iterable[str]:
+        raise RuntimeError("Ambiguous code from function: .define() or .call()")
 
     def define(self) -> Iterable[str]:
         raise NotImplementedError

@@ -3,11 +3,11 @@ from typing import Iterable, Self
 from attrs import define
 
 from typenaut import StaticClass
-from typenaut.module import Module
+from typenaut.module import CoreModule
 
 
 @define
-class Length(Module):
+class Length(CoreModule):
     ...
 
 # ---------------------------------------------------------------------------- #
@@ -129,3 +129,4 @@ class length(StaticClass):
     cm   = AbsoluteLength.from_cm
     mm   = AbsoluteLength.from_mm
     inch = AbsoluteLength.from_inch
+    zero = lambda: AbsoluteLength(value=0)

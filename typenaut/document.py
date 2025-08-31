@@ -1,3 +1,5 @@
+import atexit
+import gc
 import shutil
 import subprocess
 import tempfile
@@ -12,16 +14,18 @@ from PIL.Image import Image as ImageType
 from typenaut.core.length import Length, length
 from typenaut.module import Composite
 
+# Ensure workspace is cleaned at exit
+atexit.register(gc.collect)
+
 
 @define
-class Margin:
+class Margin(Composite):
     right:  Length = Factory(length.auto)
     left:   Length = Factory(length.auto)
     top:    Length = Factory(length.auto)
     bottom: Length = Factory(length.auto)
 
-    @property
-    def code(self) -> Iterable[str]:
+    def typst(self) -> Iterable[str]:
         yield f"#set page(margin: ("
         yield   f"right:  {self.right.code()},"
         yield   f"left:   {self.left.code()},"
@@ -32,13 +36,13 @@ class Margin:
 
 @define
 class Document(Composite):
-    margin: Margin = Factory(Margin)
+    margin: Margin = Factory(Margin, takes_self=True)
 
     workspace: Path = Factory(lambda: Path(tempfile.mkdtemp(prefix=f"{__package__}-")))
     """Temporary directory to store document files, cleaned up on garbage collection"""
 
     def __attrs_post_init__(self):
-        ...
+        Composite.__attrs_post_init__(self)
 
     def __del__(self):
         """Cleanup the temporary directory on destruction"""
@@ -56,30 +60,32 @@ class Document(Composite):
         for module in self.traverse():
             yield from module.imports()
 
-        # Global page configuration
-        yield from self.margin.code
-
         for child in self.children:
             yield from child.typst()
 
     def code(self) -> str:
-        main = (self.workspace/"main.typ")
-        main.write_text('\n'.join(self.typst()), encoding="utf-8")
+        code = '\n'.join(self.typst())
+        code = '\n'.join(filter(None, code.splitlines()))
+        self._typ.write_text(code)
 
         # Optional code formatting if available
         if (typstyle := shutil.which("typstyle")):
-            subprocess.run((typstyle, "-i", str(main)))
+            subprocess.run((typstyle, "-i", str(self._typ)))
 
-        return main.read_text(encoding="utf-8")
+        return self._typ.read_text()
+
+    @property
+    def _typ(self) -> Path:
+        return (self.workspace / "main.typ")
 
     def pdf(self,
         output: Optional[Path]=None,
     ) -> bytes:
         self.code()
         return typst.compile(
-            input=(self.workspace/"main.typ"),
-            output=output,
             root=self.workspace,
+            input=self._typ,
+            output=output,
             format="pdf",
         )
 

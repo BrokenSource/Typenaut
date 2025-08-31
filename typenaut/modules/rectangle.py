@@ -20,17 +20,23 @@ class Rectangle(Composite):
     height: Length = Factory(length.auto)
     """Vertical length of the rectangle"""
 
-    color: Color = Factory(color.none)
+    fill: Color = Factory(color.none)
     """Fill color of the rectangle"""
 
     stroke: Stroke = Factory(stroke.default)
     """Stroke color of the rectangle"""
 
+    # Todo: How to handle all borders + sides special mode?
+    radius: Length = Factory(lambda: length.pt(6))
+    """Corner radius of the rectangle"""
+
+    inset: Length = Factory(length.auto)
+
     def typst(self) -> Iterable[str]:
         # yield f"#rect("
         # yield f"    width: {self.width.code()},"
         # yield f"    height: {self.height.code()},"
-        # yield f"    fill: {self.color.code()},"
+        # yield f"    fill: {self.fill.code()},"
         # yield f"    stroke: {self.stroke.code()},"
         # yield ")["
         # for child in self.children:
@@ -41,8 +47,10 @@ class Rectangle(Composite):
             kwargs=dict(
                 width=self.width,
                 height=self.height,
-                fill=self.color,
+                fill=self.fill,
                 stroke=self.stroke,
+                radius=self.radius,
+                inset=self.inset,
             ),
             body=self.children,
         ).call()

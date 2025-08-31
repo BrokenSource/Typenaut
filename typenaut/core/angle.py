@@ -4,12 +4,12 @@ from typing import Iterable, Self
 from attrs import define
 
 from typenaut import StaticClass
-from typenaut.module import Module
+from typenaut.module import CoreModule
 
 # ---------------------------------------------------------------------------- #
 
 @define
-class Angle(Module):
+class Angle(CoreModule):
 
     value: float = 0.0
     """Angle value in degrees"""
@@ -65,21 +65,11 @@ class Angle(Module):
 # ---------------------------------------------------------------------------- #
 
 class angle(StaticClass):
-    degrees = Angle.from_degrees
-    radians = Angle.from_radians
-
-    @staticmethod
-    def zero() -> Angle:
-        return Angle(value=0.0)
-
-    @staticmethod
-    def diagonal() -> Angle:
-        return Angle(value=45.0)
-
-    @staticmethod
-    def right() -> Angle:
-        return Angle(value=90.0)
-
-    @staticmethod
-    def straight() -> Angle:
-        return Angle(value=180.0)
+    degrees  = Angle.from_degrees
+    radians  = Angle.from_radians
+    zero     = lambda: Angle(value=0.0)
+    thirty   = lambda: Angle(value=30.0)
+    diagonal = lambda: Angle(value=45.0)
+    sixty    = lambda: Angle(value=60.0)
+    right    = lambda: Angle(value=90.0)
+    straight = lambda: Angle(value=180.0)

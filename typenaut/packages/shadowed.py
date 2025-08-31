@@ -16,9 +16,6 @@ from typenaut.core.length import Length, length
 @define
 class Shadowed(Composite):
 
-    version: str = "0.2.0"
-    """Package version"""
-
     fill: Color = Factory(color.white)
     """Background color"""
 
@@ -44,10 +41,10 @@ class Shadowed(Composite):
     """Vertical offset of the shadow"""
 
     def imports(self) -> Iterable[str]:
-        yield f'#import "@preview/shadowed:{self.version}": shadowed'
+        yield f'#import "@preview/shadowed:{__version__}"'
 
     def typst(self) -> Iterable[str]:
-        yield f"#shadowed("
+        yield f"#shadowed.shadowed("
         yield   f"fill: {self.fill.code()},"
         yield   f"color: {self.color.code()},"
         yield   f"radius: {self.radius.code()},"

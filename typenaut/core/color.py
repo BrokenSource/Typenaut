@@ -1,15 +1,16 @@
 import colorsys
+import functools
 from typing import Iterable, Self
 
 from attrs import define
 
-from typenaut import StaticClass
-from typenaut.module import Module
+from typenaut import StaticClass, clamp
+from typenaut.module import CoreModule
 
 # ---------------------------------------------------------------------------- #
 
 @define
-class Color(Module):
+class Color(CoreModule):
 
     red: float = 0.0
     """Normalized red component value"""
@@ -28,16 +29,17 @@ class Color(Module):
 
     def typst(self) -> Iterable[str]:
         yield "rgb("
-        yield     f"{100.0*self.red:.2f}%,"
-        yield     f"{100.0*self.green:.2f}%,"
-        yield     f"{100.0*self.blue:.2f}%,"
-        yield     f"{100.0*self.alpha:.2f}%"
+        yield     f"{clamp(100.0*self.red,   0, 100):.2f}%,"
+        yield     f"{clamp(100.0*self.green, 0, 100):.2f}%,"
+        yield     f"{clamp(100.0*self.blue,  0, 100):.2f}%,"
+        yield     f"{clamp(100.0*self.alpha, 0, 100):.2f}%"
         yield ")"
 
     # ------------------------------------------ #
     # Red, Green, Blue (RGB)
 
     @classmethod
+    @functools.cache
     def from_rgb(cls,
         red:   float=0.0,
         green: float=0.0,
@@ -48,6 +50,7 @@ class Color(Module):
         return cls(red=red, green=green, blue=blue, alpha=alpha)
 
     @classmethod
+    @functools.cache
     def from_rgb_u8(cls,
         red:   int=0,
         green: int=0,
@@ -74,19 +77,31 @@ class Color(Module):
     # LUMA
 
     @staticmethod
+    @functools.cache
     def from_luma(value: float) -> Self:
         """Get a grayscale color from a (0.0-1.0) luma value"""
         return Color.from_rgb(red=value, green=value, blue=value)
 
     @staticmethod
+    @functools.cache
     def from_luma_u8(value: int) -> Self:
         """Get a grayscale color from a (0-255) luma value"""
         return Color.from_rgb_u8(red=value, green=value, blue=value)
+
+    @property
+    def luma(self) -> float:
+        """Get the luma (brightness) of the color"""
+        return (0.299 * self.red) + (0.587 * self.green) + (0.114 * self.blue)
+
+    @luma.setter
+    def luma(self, value: float):
+        self.red = self.green = self.blue = value
 
     # ------------------------------------------ #
     # Hexadecimal
 
     @classmethod
+    @functools.cache
     def from_hex(cls, value: str) -> Self:
         """Get a color from a hex string"""
         self = cls()
@@ -132,6 +147,7 @@ class Color(Module):
     # Hue, Saturation, Brightness (HSV)
 
     @classmethod
+    @functools.cache
     def from_hsv(cls,
         hue: float=0.0,
         saturation: float=1.0,
@@ -153,6 +169,7 @@ class Color(Module):
     # Hue, Saturation, Luminance (HSL)
 
     @classmethod
+    @functools.cache
     def from_hsl(cls,
         hue: float=0.0,
         saturation: float=1.0,
@@ -197,6 +214,7 @@ class Color(Module):
 
     @property
     def brightness(self) -> float:
+        """Zero is black, one is full color"""
         return self.hsv[2]
 
     @brightness.setter
@@ -207,6 +225,7 @@ class Color(Module):
 
     @property
     def lightness(self) -> float:
+        """Zero is black, one is white"""
         return self.hls[1]
 
     @lightness.setter

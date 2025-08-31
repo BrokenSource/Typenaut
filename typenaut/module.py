@@ -11,31 +11,10 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------- #
 
 @define
-class Module(ABC):
+class CoreModule(ABC):
     """Base module class that outputs some typst code"""
 
-    parent: Optional[Self] = field(default=None, repr=False)
-    """Parent module that owns the current one as child"""
-
-    document: Optional["Document"] = field(default=None, repr=False)
-    """The root document this module belongs to"""
-
-    def __attrs_post_init__(self):
-        from typenaut.document import Document
-
-        # Propagate root document reference
-        if (not isinstance(self, Document)):
-            self.document = (self.document or self)
-
-        # Automatically append to parent container
-        if isinstance(self.parent, Composite):
-            self.parent.add(self)
-
     # # Typst code
-
-    def imports(self) -> Iterable[str]:
-        """Optional imports for the typst document"""
-        yield ""
 
     @abstractmethod
     def typst(self) -> Iterable[str]:
@@ -49,10 +28,50 @@ class Module(ABC):
 
     def copy(self, **update: dict) -> Self:
         """Get a copy with updated values from this module"""
-        other = copy.deepcopy(self)
+        new = copy.deepcopy(self)
         for key, value in update.items():
-            setattr(other, key, value)
-        return other
+            setattr(new, key, value)
+        return new
+
+# ---------------------------------------------------------------------------- #
+
+@define
+class Module(CoreModule):
+
+    parent: Optional[Self] = field(default=None, repr=False)
+    """Parent module that owns the current one as child"""
+
+    def __attrs_post_init__(self):
+        from typenaut.document import Document
+
+        # Propagate root document reference
+        if (not isinstance(self, Document)):
+
+            # Automatically append to parent
+            if (self.parent is not None):
+                self.parent.add(self)
+
+    @property
+    def document(self) -> 'Document':
+        from typenaut.document import Document
+        while not isinstance(self, Document):
+            self = self.parent
+        return self
+
+    # # Typst code
+
+    def imports(self) -> Iterable[str]:
+        """Optional imports for the typst document"""
+        yield ""
+
+    # # Quality of life
+
+    # Override to optionally change parent
+    def copy(self, parent: "Module"=None, **update: dict) -> Self:
+        new = CoreModule.copy(self, **update)
+        if isinstance(parent, Composite):
+            parent.add(new)
+        return new
 
     def nthparent(self, n: int) -> Optional[Self]:
         """Get the Nth .parent chain module"""
@@ -74,6 +93,8 @@ class Composite(Module):
         for child in self.children:
             if isinstance(child, Composite):
                 yield from child.traverse()
+            else:
+                yield child
         yield self
 
     def add(self, child: Self) -> Self:

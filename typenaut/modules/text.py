@@ -11,10 +11,10 @@ from typenaut.module import Module
 
 
 class Font(Enum):
-    Libertinus: str = "Libertinus Serif"
-    RobotoSlab: str = "Roboto Slab"
-    Roboto:     str = "Roboto"
-    Nunito:     str = "Nunito"
+    Libertinus: str = '"Libertinus Serif"'
+    RobotoSlab: str = '"Roboto Slab"'
+    Roboto:     str = '"Roboto"'
+    Nunito:     str = '"Nunito"'
 
     def download(self) -> None:
         raise NotImplementedError
@@ -29,14 +29,9 @@ class Text(Module):
 
     color: Color = Factory(color.black)
 
-    weight: Union[Literal["regular", "bold"], int] = "regular"
+    weight: Union[Literal["regular", "bold"], int] = '"regular"'
 
     def typst(self) -> Iterable[str]:
-        # yield '#text('
-        # yield   f'font: "{denum(self.font)}",'
-        # yield   f'fill: {self.color.code()},'
-        # yield   f'weight: "{self.weight}",'
-        # yield f')[{self.value}]'
         yield from Function(
             name="text",
             kwargs=dict(

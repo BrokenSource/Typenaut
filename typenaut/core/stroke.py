@@ -5,12 +5,12 @@ from attrs import Factory, define
 from typenaut import StaticClass
 from typenaut.core.color import Color, color
 from typenaut.core.length import Length, length
-from typenaut.module import Module
+from typenaut.module import CoreModule
 
 # ---------------------------------------------------------------------------- #
 
 @define
-class Stroke(Module):
+class Stroke(CoreModule):
     color: Color  = Factory(color.black)
     width: Length = Factory(lambda: length.pt(1))
 

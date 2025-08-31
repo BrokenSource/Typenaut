@@ -2,6 +2,9 @@ from enum import Enum
 from typing import Any, Union
 
 
+def clamp(number: Any, low: Any, high: Any) -> Any:
+    return max(low, min(number, high))
+
 def denum(item: Union[Enum, Any]) -> Any:
     if isinstance(item, Enum):
         return item.value
