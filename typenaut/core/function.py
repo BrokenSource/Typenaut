@@ -2,8 +2,8 @@ from typing import Any, Iterable, Optional
 
 from attrs import Factory, define
 
-from typenaut import denum
 from typenaut.module import CoreModule
+from typenaut.utils import denum
 
 
 @define
@@ -17,7 +17,7 @@ class Function(CoreModule):
         value = denum(value)
 
         if (value is None):
-            return "none"
+            return ""
         elif isinstance(value, str):
             return f'{value}'
         elif isinstance(value, bool):
@@ -38,16 +38,17 @@ class Function(CoreModule):
         yield f"#{self.name}("
 
         # Positional arguments
-        for value in self.args:
+        for value in filter(None, self.args):
             yield f"{self.any2typ(value)},"
 
         # Keyword arguments
         for key, value in self.kwargs.items():
-            yield f"  {key}: {self.any2typ(value)},"
+            if (value is not None):
+                yield f"  {key}: {self.any2typ(value)},"
 
         yield ")["
         if (self.body is not None):
-            for item in self.body:
+            for item in filter(None, self.body):
                 yield self.any2typ(item)
         yield "]"
 

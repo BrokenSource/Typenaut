@@ -1,47 +1,39 @@
-from typing import Iterable
+from typing import Iterable, Optional
 
 from attrs import Factory, define
 
-from typenaut import StaticClass
-from typenaut.core.color import Color, color
+from typenaut.core.color import Color
 from typenaut.core.function import Function
-from typenaut.core.length import Length, length
-from typenaut.core.stroke import Stroke, stroke
+from typenaut.core.length import Length
+from typenaut.core.stroke import Stroke
 from typenaut.module import Composite
+from typenaut.utils import StaticClass
 
 # ---------------------------------------------------------------------------- #
 
 @define
 class Rectangle(Composite):
 
-    width: Length = Factory(length.auto)
+    width: Optional[Length] = None
     """Horizontal length of the rectangle"""
 
-    height: Length = Factory(length.auto)
+    height: Optional[Length] = None
     """Vertical length of the rectangle"""
 
-    fill: Color = Factory(color.none)
+    fill: Optional[Color] = None
     """Fill color of the rectangle"""
 
-    stroke: Stroke = Factory(stroke.default)
+    stroke: Optional[Stroke] = None
     """Stroke color of the rectangle"""
 
     # Todo: How to handle all borders + sides special mode?
-    radius: Length = Factory(lambda: length.pt(6))
+    radius: Optional[Length] = None
     """Corner radius of the rectangle"""
 
-    inset: Length = Factory(length.auto)
+    inset: Optional[Length] = None
+    """Inner padding of the content"""
 
     def typst(self) -> Iterable[str]:
-        # yield f"#rect("
-        # yield f"    width: {self.width.code()},"
-        # yield f"    height: {self.height.code()},"
-        # yield f"    fill: {self.fill.code()},"
-        # yield f"    stroke: {self.stroke.code()},"
-        # yield ")["
-        # for child in self.children:
-        #     yield from child.typst()
-        # yield "]"
         yield from Function(
             name="rect",
             kwargs=dict(

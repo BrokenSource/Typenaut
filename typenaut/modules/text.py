@@ -5,9 +5,9 @@ from typing import Literal, Union
 
 from attrs import Factory, define
 
-from typenaut import StaticClass, denum
 from typenaut.core import Color, Function, color
 from typenaut.module import Module
+from typenaut.utils import StaticClass
 
 
 class Font(Enum):

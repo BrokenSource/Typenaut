@@ -50,7 +50,7 @@ class Document(Composite):
 
         # Triple check workspace is a parent of system tempdir (expected, enforced)
         if (path == self.workspace) or (not self.workspace.is_relative_to(path)):
-            raise RuntimeError(f"Avoided catastrophe by not deleting {self.workspace}")
+            raise RuntimeError(f"Expected workspace {self.workspace} path changed for deletion")
 
         shutil.rmtree(self.workspace, ignore_errors=True)
 

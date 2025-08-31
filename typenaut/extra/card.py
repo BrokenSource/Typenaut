@@ -41,19 +41,16 @@ class Card(Composite):
         with base.copy() as R1:
             R1.inset = f"(top: {self.margin.code()}, rest: 0pt)"
             R1.fill.brightness *= 1.21
-            R1.stroke = None
 
             with base.copy(R1) as R2:
                 R2.inset = f"(bottom: {self.margin.code()}, rest: 0pt)"
                 R2.fill.luma /= 1.21
-                R2.stroke = None
 
                 with base.copy(R2,
                     width=self.width,
                     height=self.height,
                 ) as R3:
                     R3.inset = self.inset
-                    R3.stroke = None
                     R3.children += self.children
 
                     # Fixme (block)

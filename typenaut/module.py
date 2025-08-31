@@ -42,17 +42,15 @@ class Module(CoreModule):
     """Parent module that owns the current one as child"""
 
     def __attrs_post_init__(self):
-        from typenaut.document import Document
 
-        # Propagate root document reference
-        if (not isinstance(self, Document)):
-
-            # Automatically append to parent
-            if (self.parent is not None):
-                self.parent.add(self)
+        # Automatically append to parent
+        if (self.parent is not None):
+            self.parent.add(self)
 
     @property
     def document(self) -> 'Document':
+        # Note: While this might seem inefficient, propagating a document
+        # reference makes deepcopy objects to run __del__ many times
         from typenaut.document import Document
         while not isinstance(self, Document):
             self = self.parent

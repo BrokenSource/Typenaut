@@ -2,10 +2,10 @@ from typing import Iterable
 
 from attrs import Factory, define
 
-from typenaut import StaticClass
 from typenaut.core.color import Color, color
 from typenaut.core.length import Length, length
 from typenaut.module import CoreModule
+from typenaut.utils import StaticClass
 
 # ---------------------------------------------------------------------------- #
 

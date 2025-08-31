@@ -4,8 +4,8 @@ from typing import Iterable, Self
 
 from attrs import define
 
-from typenaut import StaticClass, clamp
 from typenaut.module import CoreModule
+from typenaut.utils import StaticClass, clamp
 
 # ---------------------------------------------------------------------------- #
 
