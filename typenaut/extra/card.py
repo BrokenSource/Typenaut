@@ -20,7 +20,7 @@ class Card(Composite):
     radius: Length = Factory(lambda: length.pt(6))
     """Rounding of the card corners"""
 
-    fill: Color = Factory(lambda: color.luma_u8(35))
+    fill: Color = Factory(lambda: color.luma(35/255))
     """Base color of the card"""
 
     inset: Length = Factory(lambda: length.pt(6))
@@ -40,11 +40,13 @@ class Card(Composite):
 
         with base.copy() as R1:
             R1.inset = f"(top: {self.margin.code()}, rest: 0pt)"
+            # R1.fill.brightness(R1.fill.as_brightness * 1.21)
             R1.fill.brightness *= 1.21
 
             with base.copy(R1) as R2:
                 R2.inset = f"(bottom: {self.margin.code()}, rest: 0pt)"
-                R2.fill.luma /= 1.21
+                # R2.fill.luma(R2.fill.luma / 1.21)
+                # R2.fill.luma /= 1.21
 
                 with base.copy(R2,
                     width=self.width,

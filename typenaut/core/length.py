@@ -3,7 +3,7 @@ from typing import Iterable, Self
 from attrs import define
 
 from typenaut.module import CoreModule
-from typenaut.utils import StaticClass
+from typenaut.utils import StaticClass, universal
 
 
 @define
@@ -22,102 +22,83 @@ class AutoLength(Length):
 @define
 class RelativeLength(Length):
     """Percentage relative to the container"""
-    value: float = 0.0
+    _value: float = 0.0
 
     def typst(self) -> Iterable[str]:
-        yield f"{self.value}%"
+        yield f"{self._value}%"
 
 # ---------------------------------------------------------------------------- #
 
 @define
 class FractionLength(Length):
     """Flex length relative to the container and other items"""
-    value: float = 1.0
+    _value: float = 1.0
 
     def typst(self) -> Iterable[str]:
-        yield f"{self.value}fr"
+        yield f"{self._value}fr"
 
     def __add__(self, other: Self) -> Self:
-        return FractionLength(self.value + other.value)
+        return FractionLength(self._value + other._value)
 
 # ---------------------------------------------------------------------------- #
 
 @define
 class AbsoluteLength(Length):
 
-    value: float = 0.0
+    _value: float = 0.0
     """Length value in points"""
 
     def typst(self) -> Iterable[str]:
-        yield f'{self.value}pt'
+        yield f'{self._value}pt'
 
     # ------------------------------------------ #
     # Points unit, common in typography
 
-    @classmethod
-    def from_pt(cls, value: float) -> Self:
-        self = cls()
-        self.pt = value
+    @universal
+    def pt(self, value: float) -> Self:
+        self._value = value
         return self
 
-    @property
-    def pt(self) -> float:
-        return self.value
-
-    @pt.setter
-    def pt(self, pt: float):
-        self.value = pt
+    def as_pt(self) -> float:
+        return self._value
 
     # ------------------------------------------ #
     # Centimeters
 
-    @classmethod
-    def from_cm(cls, value: float) -> Self:
-        self = cls()
-        self.cm = value
+    @universal
+    def cm(self, value: float) -> Self:
+        self._value = (value * 28.3465)
         return self
 
-    @property
-    def cm(self) -> float:
-        return (self.value / 28.3465)
-
-    @cm.setter
-    def cm(self, cm: float):
-        self.value = (cm * 28.3465)
+    def as_cm(self) -> float:
+        return (self._value / 28.3465)
 
     # ------------------------------------------ #
     # Milimeters
 
-    @classmethod
-    def from_mm(cls, value: float) -> Self:
-        self = cls()
-        self.mm = value
-        return self
+    @universal
+    def mm(self, value: float) -> Self:
+        return self.cm(value / 10)
 
-    @property
-    def mm(self) -> float:
+    def as_mm(self) -> float:
         return (self.cm * 10)
-
-    @mm.setter
-    def mm(self, mm: float):
-        self.cm = (mm / 10)
 
     # ------------------------------------------ #
     # Inches
 
-    @classmethod
-    def from_inch(cls, value: float) -> Self:
-        self = cls()
-        self.inch = value
-        return self
+    @universal
+    def inch(self, value: float) -> Self:
+        return self.cm(value * 2.54)
 
-    @property
-    def inch(self) -> float:
+    def as_inch(self) -> float:
         return (self.cm / 2.54)
 
-    @inch.setter
-    def inch(self, inch: float):
-        self.cm = (inch * 2.54)
+    # ------------------------------------------ #
+    # Common values
+
+    @universal
+    def zero(self) -> Self:
+        return self.cm(0.0)
 
 # ---------------------------------------------------------------------------- #
 
@@ -125,8 +106,8 @@ class length(StaticClass):
     auto = AutoLength
     rel  = RelativeLength
     fr   = FractionLength
-    pt   = AbsoluteLength.from_pt
-    cm   = AbsoluteLength.from_cm
-    mm   = AbsoluteLength.from_mm
-    inch = AbsoluteLength.from_inch
-    zero = lambda: AbsoluteLength(value=0)
+    pt   = AbsoluteLength.pt
+    cm   = AbsoluteLength.cm
+    mm   = AbsoluteLength.mm
+    inch = AbsoluteLength.inch
+    zero = lambda: AbsoluteLength(_value=0)

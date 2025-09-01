@@ -1,17 +1,16 @@
 from typenaut import Document, Text, length
-from typenaut.packages.curvly import ArcText, CircleText
-from typenaut.packages.shadowed import Shadowed
+from typenaut.packages import curvly, shadowed
 
 
 class Example(Document):
     def build(self):
-        with Shadowed(self) as shadowed:
-            Text(shadowed, value="#lorem(50)")
-            ArcText(shadowed,
+        with shadowed.Shadowed(self) as shadowbox:
+            Text(shadowbox, value="#lorem(50)")
+            curvly.ArcText(shadowbox,
                 value="Surfing in the Flow",
                 width=length.cm(10)
             )
-        CircleText(self)
+        curvly.CircleText(self)
 
 def main():
     document = Example()
