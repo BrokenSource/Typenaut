@@ -4,7 +4,7 @@ from attrs import Factory, define
 
 from typenaut.core.color import Color
 from typenaut.core.function import Function
-from typenaut.core.length import Length
+from typenaut.core.length import Length, length
 from typenaut.core.stroke import Stroke
 from typenaut.module import Composite
 from typenaut.utils import StaticClass
@@ -14,10 +14,10 @@ from typenaut.utils import StaticClass
 @define
 class Rectangle(Composite):
 
-    width: Optional[Length] = None
+    width: Optional[Length] = Factory(length.auto)
     """Horizontal length of the rectangle"""
 
-    height: Optional[Length] = None
+    height: Optional[Length] = Factory(length.auto)
     """Vertical length of the rectangle"""
 
     fill: Optional[Color] = None

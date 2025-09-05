@@ -8,7 +8,7 @@ from typing import Iterable
 
 from attrs import Factory, define
 
-from typenaut import Angle, Color, Length, Module, angle, color, length
+from typenaut import Angle, Color, Length, Module, color, length
 
 
 @define
@@ -18,7 +18,7 @@ class ArcText(Module):
     width: Length = Factory(lambda: length.cm(5))
     """Horizontal space the text occupies"""
 
-    angle: Angle = Factory(lambda: angle.degrees(30.0))
+    angle: Angle = Factory(lambda: Angle.degrees(30.0))
     """Circle ratio the text spans"""
 
     rotate: bool = True
@@ -48,13 +48,13 @@ class CircleText(Module):
     top: str = "And Now for Something"
     """Top text displayed on the circle"""
 
-    top_angle: Angle = Factory(lambda: angle.degrees(130.0))
+    top_angle: Angle = Factory(lambda: Angle.degrees(130.0))
     """Circle ratio the top text spans"""
 
     bottom: str = "Completely Different"
     """Bottom text displayed on the circle"""
 
-    bottom_angle: Angle = Factory(lambda: angle.degrees(130.0))
+    bottom_angle: Angle = Factory(lambda: Angle.degrees(130.0))
     """Circle ratio the bottom text spans"""
 
     width: Length = Factory(lambda: length.cm(3.5))

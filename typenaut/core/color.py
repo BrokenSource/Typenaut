@@ -24,7 +24,7 @@ class Color(CoreModule):
     alpha: float = 1.0
     """Normalized alpha component value"""
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Module implementation
 
     def typst(self) -> Iterable[str]:
@@ -35,7 +35,7 @@ class Color(CoreModule):
         yield     f"{clamp(100.0*self.alpha, 0, 100):.2f}%"
         yield ")"
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Red, Green, Blue (RGB)
 
     @classmethod
@@ -73,7 +73,7 @@ class Color(CoreModule):
     def rgb(self, value: tuple[float, float, float]):
         self.red, self.green, self.blue = value
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # LUMA
 
     @staticmethod
@@ -97,7 +97,7 @@ class Color(CoreModule):
     def luma(self, value: float):
         self.red = self.green = self.blue = value
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Hexadecimal
 
     @classmethod
@@ -143,7 +143,7 @@ class Color(CoreModule):
         # Update self values consuming the generator
         self.red, self.green, self.blue, self.alpha, *_ = color
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Hue, Saturation, Brightness (HSV)
 
     @classmethod
@@ -165,7 +165,7 @@ class Color(CoreModule):
     def hsv(self, value: tuple[float, float, float]):
         self.red, self.green, self.blue = colorsys.hsv_to_rgb(*value)
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Hue, Saturation, Luminance (HSL)
 
     @classmethod
@@ -187,7 +187,7 @@ class Color(CoreModule):
     def hls(self, value: tuple[float, float, float]):
         self.red, self.green, self.blue = colorsys.hls_to_rgb(*value)
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Shared and unique components of HSV, HSL
 
     # Hue

@@ -51,7 +51,7 @@ class AbsoluteLength(Length):
     def typst(self) -> Iterable[str]:
         yield f'{self.value}pt'
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Points unit, common in typography
 
     @classmethod
@@ -68,7 +68,7 @@ class AbsoluteLength(Length):
     def pt(self, pt: float):
         self.value = pt
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Centimeters
 
     @classmethod
@@ -85,7 +85,7 @@ class AbsoluteLength(Length):
     def cm(self, cm: float):
         self.value = (cm * 28.3465)
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Milimeters
 
     @classmethod
@@ -102,7 +102,7 @@ class AbsoluteLength(Length):
     def mm(self, mm: float):
         self.cm = (mm / 10)
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Inches
 
     @classmethod

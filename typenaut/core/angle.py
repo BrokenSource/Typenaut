@@ -1,75 +1,87 @@
 import math
-from typing import Iterable, Self
+from typing import Iterable, Self, overload
 
 from attrs import define
 
+from typenaut import Null
 from typenaut.module import CoreModule
-from typenaut.utils import StaticClass
+from typenaut.utils import StaticClass, hybridmethod
 
 # ---------------------------------------------------------------------------- #
 
 @define
 class Angle(CoreModule):
 
-    value: float = 0.0
+    _value: float = 0.0
     """Angle value in degrees"""
 
     def typst(self) -> Iterable[str]:
-        yield f"{self.value}deg"
+        yield f"{self._value}deg"
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Special functions
 
     def flip(self) -> Self:
-        self.value *= -1
+        self._value *= -1
         return self
 
     def normalize(self) -> Self:
-        self.value %= 360
+        self._value %= 360
         return self
 
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Degrees
 
-    @classmethod
-    def from_degrees(cls, value: float) -> Self:
-        self = cls()
-        self.value = value
+    @overload
+    def degrees(cls, new: float) -> Self: ...
+    @overload
+    def degrees(self) -> float: ...
+
+    @hybridmethod
+    def degrees(self, new: float=Null):
+        if (new is Null):
+            return self._value
+        self._value = new
         return self
 
-    @property
-    def degrees(self) -> float:
-        return self.value
-
-    @degrees.setter
-    def degrees(self, degrees: float):
-        self.value = degrees
-
-    # ------------------------------------------ #
+    # -------------------------------- #
     # Radians
 
-    @classmethod
-    def from_radians(cls, value: float) -> Self:
-        self = cls()
-        self.radians = value
-        return self
+    @overload
+    def radians(cls, new: float) -> Self: ...
+    @overload
+    def radians(self) -> float: ...
 
-    @property
-    def radians(self) -> float:
-        return math.radians(self.value)
+    @hybridmethod
+    def radians(self, new: float=Null):
+        if (new is not Null):
+            self._value = math.degrees(new)
+            return self
+        return math.radians(self._value)
 
-    @radians.setter
-    def radians(self, radians: float):
-        self.value = math.degrees(radians)
+    # -------------------------------- #
+    # Common values
 
-# ---------------------------------------------------------------------------- #
+    @hybridmethod
+    def zero(self):
+        return self.degrees(0.0)
 
-class angle(StaticClass):
-    degrees  = Angle.from_degrees
-    radians  = Angle.from_radians
-    zero     = lambda: Angle(value=0.0)
-    thirty   = lambda: Angle(value=30.0)
-    diagonal = lambda: Angle(value=45.0)
-    sixty    = lambda: Angle(value=60.0)
-    right    = lambda: Angle(value=90.0)
-    straight = lambda: Angle(value=180.0)
+    @hybridmethod
+    def thirty(self):
+        return self.degrees(30.0)
+
+    @hybridmethod
+    def diagonal(self):
+        return self.degrees(45.0)
+
+    @hybridmethod
+    def sixty(self):
+        return self.degrees(60.0)
+
+    @hybridmethod
+    def right(self):
+        return self.degrees(90.0)
+
+    @hybridmethod
+    def straight(self):
+        return self.degrees(180.0)

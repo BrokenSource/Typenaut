@@ -13,6 +13,7 @@ from PIL.Image import Image as ImageType
 
 from typenaut.core.length import Length, length
 from typenaut.module import Composite
+from typenaut.utils import mkdir
 
 # Ensure workspace is cleaned at exit
 atexit.register(gc.collect)
@@ -50,7 +51,7 @@ class Document(Composite):
 
         # Triple check workspace is a parent of system tempdir (expected, enforced)
         if (path == self.workspace) or (not self.workspace.is_relative_to(path)):
-            raise RuntimeError(f"Expected workspace {self.workspace} path changed for deletion")
+            raise RuntimeError(f"Expected workspace path changed: {self.workspace}")
 
         shutil.rmtree(self.workspace, ignore_errors=True)
 
@@ -74,10 +75,6 @@ class Document(Composite):
 
         return self._typ.read_text()
 
-    @property
-    def _typ(self) -> Path:
-        return (self.workspace / "main.typ")
-
     def pdf(self,
         output: Optional[Path]=None,
     ) -> bytes:
@@ -93,3 +90,14 @@ class Document(Composite):
         ppi: int=144,
     ) -> ImageType:
         raise NotImplementedError
+
+    # -------------------------------- #
+    # Static directories and files
+
+    @property
+    def _typ(self) -> Path:
+        return (self.workspace/"main.typ")
+
+    @property
+    def images(self) -> Path:
+        return mkdir(self.workspace/"images")
