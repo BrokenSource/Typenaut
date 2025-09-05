@@ -1,9 +1,8 @@
 import math
-from typing import Iterable, Self, overload
+from typing import Iterable, Self
 
 from attrs import define
 
-from typenaut import Null
 from typenaut.module import CoreModule
 from typenaut.utils import StaticClass, hybridmethod
 
@@ -32,32 +31,28 @@ class Angle(CoreModule):
     # -------------------------------- #
     # Degrees
 
-    @overload
-    def degrees(cls, new: float) -> Self: ...
-    @overload
-    def degrees(self) -> float: ...
-
     @hybridmethod
-    def degrees(self, new: float=Null):
-        if (new is Null):
-            return self._value
-        self._value = new
+    def set_degrees(self, value: float) -> Self:
+        self._value = value
         return self
+
+    def as_degrees(self) -> float:
+        return self._value
+
+    degrees = property(as_degrees, set_degrees)
 
     # -------------------------------- #
     # Radians
 
-    @overload
-    def radians(cls, new: float) -> Self: ...
-    @overload
-    def radians(self) -> float: ...
-
     @hybridmethod
-    def radians(self, new: float=Null):
-        if (new is not Null):
-            self._value = math.degrees(new)
-            return self
+    def set_radians(self, value: float) -> Self:
+        self._value = math.degrees(value)
+        return self
+
+    def as_radians(self) -> float:
         return math.radians(self._value)
+
+    radians = property(as_radians, set_radians)
 
     # -------------------------------- #
     # Common values
@@ -85,3 +80,15 @@ class Angle(CoreModule):
     @hybridmethod
     def straight(self):
         return self.degrees(180.0)
+
+# ---------------------------------------------------------------------------- #
+
+class angle(StaticClass):
+    degrees  = Angle.set_degrees
+    radians  = Angle.set_radians
+    zero     = Angle.zero
+    thirty   = Angle.thirty
+    diagonal = Angle.diagonal
+    sixty    = Angle.sixty
+    right    = Angle.right
+    straight = Angle.straight

@@ -3,7 +3,7 @@ from typing import Iterable, Self
 from attrs import define
 
 from typenaut.module import CoreModule
-from typenaut.utils import StaticClass
+from typenaut.utils import StaticClass, hybridmethod
 
 
 @define
@@ -45,28 +45,24 @@ class FractionLength(Length):
 @define
 class AbsoluteLength(Length):
 
-    value: float = 0.0
+    _value: float = 0.0
     """Length value in points"""
 
     def typst(self) -> Iterable[str]:
-        yield f'{self.value}pt'
+        yield f'{self._value}pt'
 
     # -------------------------------- #
     # Points unit, common in typography
 
-    @classmethod
-    def from_pt(cls, value: float) -> Self:
-        self = cls()
-        self.pt = value
+    @hybridmethod
+    def set_pt(self, value: float) -> Self:
+        self._value = value
         return self
 
-    @property
-    def pt(self) -> float:
-        return self.value
+    def as_pt(self) -> float:
+        return self._value
 
-    @pt.setter
-    def pt(self, pt: float):
-        self.value = pt
+    pt = property(as_pt, set_pt)
 
     # -------------------------------- #
     # Centimeters
@@ -79,11 +75,11 @@ class AbsoluteLength(Length):
 
     @property
     def cm(self) -> float:
-        return (self.value / 28.3465)
+        return (self._value / 28.3465)
 
     @cm.setter
     def cm(self, cm: float):
-        self.value = (cm * 28.3465)
+        self._value = (cm * 28.3465)
 
     # -------------------------------- #
     # Milimeters
@@ -125,7 +121,7 @@ class length(StaticClass):
     auto = AutoLength
     rel  = RelativeLength
     fr   = FractionLength
-    pt   = AbsoluteLength.from_pt
+    pt   = AbsoluteLength.set_pt
     cm   = AbsoluteLength.from_cm
     mm   = AbsoluteLength.from_mm
     inch = AbsoluteLength.from_inch

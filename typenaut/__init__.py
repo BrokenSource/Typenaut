@@ -1,4 +1,5 @@
 Null = object()
+"""For differentiating 'None' and 'Nothing'"""
 
 from typenaut.core import *
 from typenaut.document import Document

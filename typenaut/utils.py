@@ -1,7 +1,8 @@
 import functools
+import inspect
 from enum import Enum
 from pathlib import Path
-from typing import Any, Self, Union
+from typing import Any, Self, Union, overload
 
 from attrs import define
 
@@ -29,10 +30,13 @@ class hybridmethod:
     method: callable
 
     def __get__(self, this: Self, cls: type) -> callable:
-        instance = (this or cls())
 
         @functools.wraps(self.method)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs) -> Any:
+            instance = (this or cls())
             return self.method(instance, *args, **kwargs)
 
         return wrapper
+
+    def __call__(self, this: Self, *args, **kwargs) -> Any:
+        return self.method(this, *args, **kwargs)
