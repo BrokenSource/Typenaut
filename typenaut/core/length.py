@@ -49,7 +49,7 @@ class AbsoluteLength(Length):
     """Length value in points"""
 
     def typst(self) -> Iterable[str]:
-        yield f'{self._value}pt'
+        yield f"{self._value}pt"
 
     # -------------------------------- #
     # Points unit, common in typography
@@ -59,61 +59,54 @@ class AbsoluteLength(Length):
         self._value = value
         return self
 
-    def as_pt(self) -> float:
+    def get_pt(self) -> float:
         return self._value
 
-    pt = property(as_pt, set_pt)
+    pt = property(get_pt, set_pt)
 
     # -------------------------------- #
     # Centimeters
 
-    @classmethod
-    def from_cm(cls, value: float) -> Self:
-        self = cls()
-        self.cm = value
+    @hybridmethod
+    def set_cm(self, value: float) -> Self:
+        self._value = (value * 28.3465)
         return self
 
-    @property
-    def cm(self) -> float:
+    def get_cm(self) -> float:
         return (self._value / 28.3465)
 
-    @cm.setter
-    def cm(self, cm: float):
-        self._value = (cm * 28.3465)
+    cm = property(get_cm, set_cm)
 
     # -------------------------------- #
     # Milimeters
 
-    @classmethod
-    def from_mm(cls, value: float) -> Self:
-        self = cls()
-        self.mm = value
-        return self
+    @hybridmethod
+    def set_mm(self, value: float) -> Self:
+        return self.set_cm(value / 10.0)
 
-    @property
-    def mm(self) -> float:
-        return (self.cm * 10)
+    def get_mm(self) -> float:
+        return (self.cm * 10.0)
 
-    @mm.setter
-    def mm(self, mm: float):
-        self.cm = (mm / 10)
+    mm = property(get_mm, set_mm)
 
     # -------------------------------- #
     # Inches
 
-    @classmethod
-    def from_inch(cls, value: float) -> Self:
-        self = cls()
-        self.inch = value
-        return self
+    @hybridmethod
+    def set_inch(self, value: float) -> Self:
+        return self.set_cm(value * 2.54)
 
-    @property
-    def inch(self) -> float:
-        return (self.cm / 2.54)
+    def get_inch(self) -> float:
+        return (self._value / 2.54)
 
-    @inch.setter
-    def inch(self, inch: float):
-        self.cm = (inch * 2.54)
+    inch = property(get_inch, set_inch)
+
+    # -------------------------------- #
+    # Special
+
+    @hybridmethod
+    def zero(self) -> Self:
+        return self.set_pt(0.0)
 
 # ---------------------------------------------------------------------------- #
 
@@ -122,7 +115,7 @@ class length(StaticClass):
     rel  = RelativeLength
     fr   = FractionLength
     pt   = AbsoluteLength.set_pt
-    cm   = AbsoluteLength.from_cm
-    mm   = AbsoluteLength.from_mm
-    inch = AbsoluteLength.from_inch
-    zero = lambda: AbsoluteLength(value=0)
+    cm   = AbsoluteLength.set_cm
+    mm   = AbsoluteLength.set_mm
+    inch = AbsoluteLength.set_inch
+    zero = AbsoluteLength.zero

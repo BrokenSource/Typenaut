@@ -1,8 +1,7 @@
 import functools
-import inspect
 from enum import Enum
 from pathlib import Path
-from typing import Any, Self, Union, overload
+from typing import Any, Self, Union
 
 from attrs import define
 
@@ -26,7 +25,7 @@ def mkdir(path: Path) -> Path:
 
 @define
 class hybridmethod:
-    """Auto make a self instance called as classmethod"""
+    """Automatically make a 'self' instance if called as a classmethod"""
     method: callable
 
     def __get__(self, this: Self, cls: type) -> callable:

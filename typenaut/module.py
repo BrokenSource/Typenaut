@@ -2,6 +2,7 @@ import copy
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Optional, Self
+from uuid import UUID, uuid4
 
 from attrs import Factory, define, field
 
@@ -105,3 +106,11 @@ class Composite(Module):
 
     def __exit__(self, *args):
         pass
+
+# ---------------------------------------------------------------------------- #
+
+@define
+class Labeled(Module):
+
+    label: UUID = Factory(uuid4)
+    """Unique identifier for the module"""

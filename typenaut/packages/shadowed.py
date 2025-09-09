@@ -10,6 +10,7 @@ from attrs import Factory, define
 
 from typenaut import Composite
 from typenaut.core.color import Color, color
+from typenaut.core.function import Function
 from typenaut.core.length import Length, length
 
 
@@ -44,16 +45,17 @@ class Shadowed(Composite):
         yield f'#import "@preview/shadowed:{__version__}"'
 
     def typst(self) -> Iterable[str]:
-        yield f"#shadowed.shadowed("
-        yield   f"fill: {self.fill.code()},"
-        yield   f"color: {self.color.code()},"
-        yield   f"radius: {self.radius.code()},"
-        yield   f"inset: {self.inset.code()},"
-        yield   f"shadow: {self.shadow.code()},"
-        yield   f"clip: {str(self.clip).lower()},"
-        yield   f"dx: {self.dx.code()},"
-        yield   f"dy: {self.dy.code()},"
-        yield ")["
-        for child in self.children:
-            yield from child.typst()
-        yield "]"
+        yield from Function(
+            name="shadowed.shadowed",
+            kwargs=dict(
+                fill=self.fill,
+                color=self.color,
+                radius=self.radius,
+                inset=self.inset,
+                shadow=self.shadow,
+                clip=self.clip,
+                dx=self.dx,
+                dy=self.dy,
+            ),
+            body=self.children,
+        ).call()

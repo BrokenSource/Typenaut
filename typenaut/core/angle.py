@@ -36,10 +36,10 @@ class Angle(CoreModule):
         self._value = value
         return self
 
-    def as_degrees(self) -> float:
+    def get_degrees(self) -> float:
         return self._value
 
-    degrees = property(as_degrees, set_degrees)
+    degrees = property(get_degrees, set_degrees)
 
     # -------------------------------- #
     # Radians
@@ -49,37 +49,37 @@ class Angle(CoreModule):
         self._value = math.degrees(value)
         return self
 
-    def as_radians(self) -> float:
+    def get_radians(self) -> float:
         return math.radians(self._value)
 
-    radians = property(as_radians, set_radians)
+    radians = property(get_radians, set_radians)
 
     # -------------------------------- #
     # Common values
 
     @hybridmethod
     def zero(self):
-        return self.degrees(0.0)
+        return self.set_degrees(0.0)
 
     @hybridmethod
     def thirty(self):
-        return self.degrees(30.0)
+        return self.set_degrees(30.0)
 
     @hybridmethod
     def diagonal(self):
-        return self.degrees(45.0)
+        return self.set_degrees(45.0)
 
     @hybridmethod
     def sixty(self):
-        return self.degrees(60.0)
+        return self.set_degrees(60.0)
 
     @hybridmethod
     def right(self):
-        return self.degrees(90.0)
+        return self.set_degrees(90.0)
 
     @hybridmethod
     def straight(self):
-        return self.degrees(180.0)
+        return self.set_degrees(180.0)
 
 # ---------------------------------------------------------------------------- #
 

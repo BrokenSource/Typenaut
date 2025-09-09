@@ -3,5 +3,5 @@ Null = object()
 
 from typenaut.core import *
 from typenaut.document import Document
-from typenaut.module import Composite, Module
+from typenaut.module import Composite, Labeled, Module
 from typenaut.modules import *

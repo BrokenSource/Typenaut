@@ -1,27 +1,29 @@
 import colorsys
-import functools
 from typing import Iterable, Self
 
-from attrs import define
+from attrs import Attribute, define, field
 
 from typenaut.module import CoreModule
-from typenaut.utils import StaticClass, clamp
+from typenaut.utils import StaticClass, clamp, hybridmethod
 
 # ---------------------------------------------------------------------------- #
+
+def _clamp_color(self, attribute: Attribute, value: float) -> float:
+    return clamp(value, 0.0, 1.0)
 
 @define
 class Color(CoreModule):
 
-    red: float = 0.0
+    red: float = field(default=0.0, on_setattr=_clamp_color)
     """Normalized red component value"""
 
-    green: float = 0.0
+    green: float = field(default=0.0, on_setattr=_clamp_color)
     """Normalized green component value"""
 
-    blue: float = 0.0
+    blue: float = field(default=0.0, on_setattr=_clamp_color)
     """Normalized blue component value"""
 
-    alpha: float = 1.0
+    alpha: float = field(default=1.0, on_setattr=_clamp_color)
     """Normalized alpha component value"""
 
     # -------------------------------- #
@@ -38,88 +40,92 @@ class Color(CoreModule):
     # -------------------------------- #
     # Red, Green, Blue (RGB)
 
-    @classmethod
-    @functools.cache
-    def from_rgb(cls,
+    @hybridmethod
+    def set_red(self, value: float) -> Self:
+        self.red = value
+        return self
+
+    @hybridmethod
+    def set_green(self, value: float) -> Self:
+        self.green = value
+        return self
+
+    @hybridmethod
+    def set_blue(self, value: float) -> Self:
+        self.blue = value
+        return self
+
+    @hybridmethod
+    def set_rgb(self,
         red:   float=0.0,
         green: float=0.0,
         blue:  float=0.0,
-        alpha: float=1.0
+        alpha: float=1.0,
     ) -> Self:
         """Get a color from a rgba(0.0-1.0) normalized tuple"""
-        return cls(red=red, green=green, blue=blue, alpha=alpha)
+        self.red   = red
+        self.green = green
+        self.blue  = blue
+        self.alpha = alpha
+        return self
 
-    @classmethod
-    @functools.cache
-    def from_rgb_u8(cls,
+    def get_rgb(self) -> tuple[float, float, float]:
+        return (self.red, self.green, self.blue)
+
+    # Fixme (setter): How to unpack a setter?
+    rgb = property(get_rgb)
+
+    @hybridmethod
+    def set_rgb_u8(self,
         red:   int=0,
         green: int=0,
         blue:  int=0,
-        alpha: int=255
+        alpha: int=255,
     ) -> Self:
         """Get a color from a rgba(0-255) SDR u8 tuple"""
-        return cls(
+        return self.set_rgb(
             red   = (red  /255.0),
             green = (green/255.0),
             blue  = (blue /255.0),
-            alpha = (alpha/255.0)
+            alpha = (alpha/255.0),
         )
 
-    @property
-    def rgb(self) -> tuple[float, float, float]:
-        return (self.red, self.green, self.blue)
+    def get_rgb_u8(self) -> tuple[int, int, int]:
+        return (
+            int(255*self.red),
+            int(255*self.green),
+            int(255*self.blue),
+        )
 
-    @rgb.setter
-    def rgb(self, value: tuple[float, float, float]):
-        self.red, self.green, self.blue = value
+    # Fixme (setter): How to unpack a setter?
+    rgb_u8 = property(get_rgb_u8)
 
     # -------------------------------- #
     # LUMA
 
-    @staticmethod
-    @functools.cache
-    def from_luma(value: float) -> Self:
+    @hybridmethod
+    def set_luma(self, value: float) -> Self:
         """Get a grayscale color from a (0.0-1.0) luma value"""
-        return Color.from_rgb(red=value, green=value, blue=value)
+        self.red = self.green = self.blue = value
+        return self
 
-    @staticmethod
-    @functools.cache
-    def from_luma_u8(value: int) -> Self:
-        """Get a grayscale color from a (0-255) luma value"""
-        return Color.from_rgb_u8(red=value, green=value, blue=value)
-
-    @property
-    def luma(self) -> float:
+    def get_luma(self) -> float:
         """Get the luma (brightness) of the color"""
         return (0.299 * self.red) + (0.587 * self.green) + (0.114 * self.blue)
 
-    @luma.setter
-    def luma(self, value: float):
-        self.red = self.green = self.blue = value
+    luma = property(get_luma, set_luma)
+
+    @hybridmethod
+    def set_luma_u8(self, value: int) -> Self:
+        """Get a grayscale color from a (0-255) luma value"""
+        return self.set_luma(value/255.0)
 
     # -------------------------------- #
     # Hexadecimal
 
-    @classmethod
-    @functools.cache
-    def from_hex(cls, value: str) -> Self:
+    @hybridmethod
+    def set_hex(self, value: str) -> Self:
         """Get a color from a hex string"""
-        self = cls()
-        self.hex = value
-        return self
-
-    @property
-    def hex(self) -> str:
-        """Get the color as a hex string"""
-        return ("#"
-            f"{int(255*self.red):02X}"
-            f"{int(255*self.green):02X}"
-            f"{int(255*self.blue):02X}"
-            f"{int(255*self.alpha):02X}"
-        )
-
-    @hex.setter
-    def hex(self, value: str):
         value: str = value.lstrip("#")
 
         def parse(value: str, chunk: int) -> Iterable[int]:
@@ -142,50 +148,63 @@ class Color(CoreModule):
 
         # Update self values consuming the generator
         self.red, self.green, self.blue, self.alpha, *_ = color
+        return self
+
+    @property
+    def get_hex(self) -> str:
+        """Get the color as a hex string"""
+        return ("#"
+            f"{int(255*self.red):02X}"
+            f"{int(255*self.green):02X}"
+            f"{int(255*self.blue):02X}"
+            f"{int(255*self.alpha):02X}"
+        )
+
+    hex = property(get_hex, set_hex)
 
     # -------------------------------- #
     # Hue, Saturation, Brightness (HSV)
 
-    @classmethod
-    @functools.cache
-    def from_hsv(cls,
-        hue: float=0.0,
+    @hybridmethod
+    def set_hsv(self,
+        hue:        float=0.0,
         saturation: float=1.0,
         brightness: float=1.0,
-        alpha: float=0.0
+        alpha:      float=1.0,
     ) -> Self:
         """Get a color from a hsva(0.0-1.0) normalized tuple"""
-        return cls(*colorsys.hsv_to_rgb(hue, saturation, brightness), alpha=alpha)
+        rgb = colorsys.hsv_to_rgb(hue, saturation, brightness)
+        self.red, self.green, self.blue = rgb
+        self.alpha = alpha
+        return self
 
-    @property
-    def hsv(self) -> tuple[float, float, float]:
+    def get_hsv(self) -> tuple[float, float, float]:
         return colorsys.rgb_to_hsv(self.red, self.green, self.blue)
 
-    @hsv.setter
-    def hsv(self, value: tuple[float, float, float]):
-        self.red, self.green, self.blue = colorsys.hsv_to_rgb(*value)
+    # Fixme (setter): How to unpack a setter?
+    hsv = property(get_hsv, set_hsv)
 
     # -------------------------------- #
     # Hue, Saturation, Luminance (HSL)
 
-    @classmethod
-    @functools.cache
-    def from_hsl(cls,
-        hue: float=0.0,
+    @hybridmethod
+    def set_hsl(self,
+        hue:        float=0.0,
         saturation: float=1.0,
-        lightness: float=1.0,
-        alpha: float=1.0
+        lightness:  float=1.0,
+        alpha:      float=1.0,
     ) -> Self:
         """Get a color from a hsla(0.0-1.0) normalized tuple"""
-        return cls(*colorsys.hls_to_rgb(hue, lightness, saturation), alpha=alpha)
+        rgb = colorsys.hls_to_rgb(hue, lightness, saturation)
+        self.red, self.green, self.blue = rgb
+        self.alpha = alpha
+        return self
 
-    @property
-    def hls(self) -> tuple[float, float, float]:
+    def as_hsl(self) -> tuple[float, float, float]:
         return colorsys.rgb_to_hls(self.red, self.green, self.blue)
 
-    @hls.setter
-    def hls(self, value: tuple[float, float, float]):
-        self.red, self.green, self.blue = colorsys.hls_to_rgb(*value)
+    # Fixme (setter): How to unpack a setter?
+    hsl = property(as_hsl, set_hsl)
 
     # -------------------------------- #
     # Shared and unique components of HSV, HSL
@@ -198,69 +217,78 @@ class Color(CoreModule):
 
     @hue.setter
     def hue(self, value: float):
-        self.hsv = (value, self.saturation, self.brightness)
+        self.set_hsv(value, self.saturation, self.brightness)
 
     # Saturation
 
     @property
     def saturation(self) -> float:
-        return self.hsv[1]
+        return self.get_hsv()[1]
 
     @saturation.setter
     def saturation(self, value: float):
-        self.hsv = (self.hue, value, self.brightness)
+        self.set_hsv(self.hue, value, self.brightness)
 
     # Brightness
 
     @property
     def brightness(self) -> float:
         """Zero is black, one is full color"""
-        return self.hsv[2]
+        return self.get_hsv()[2]
 
     @brightness.setter
     def brightness(self, value: float):
-        self.hsv = (self.hue, self.saturation, value)
+        self.set_hsv(self.hue, self.saturation, value)
 
     # Lightness
 
     @property
     def lightness(self) -> float:
         """Zero is black, one is white"""
-        return self.hls[1]
+        return self.get_hls()[1]
 
     @lightness.setter
     def lightness(self, value: float):
-        self.hls = (self.hue, value, self.saturation)
+        self.set_hls(self.hue, value, self.saturation)
+
+    # -------------------------------- #
+    # Special
+
+    def negate(self) -> Self:
+        self.red   = (1.0 - self.red)
+        self.green = (1.0 - self.green)
+        self.blue  = (1.0 - self.blue)
+        return self
 
 # ---------------------------------------------------------------------------- #
 
 class color(StaticClass):
-    rgb     = Color.from_rgb
-    rgb_u8  = Color.from_rgb_u8
-    luma    = Color.from_luma
-    luma_u8 = Color.from_luma_u8
-    hex     = Color.from_hex
-    hsv     = Color.from_hsv
-    hsl     = Color.from_hsl
+    rgb     = Color.set_rgb
+    rgb_u8  = Color.set_rgb_u8
+    luma    = Color.set_luma
+    luma_u8 = Color.set_luma_u8
+    hex     = Color.set_hex
+    hsv     = Color.set_hsv
+    hsl     = Color.set_hsl
 
-    # # Predefined Colors
+    # https://typst.app/docs/reference/visualize/color/#predefined-colors
 
-    none    = lambda: Color.from_hex("#00000000")
-    black   = lambda: Color.from_hex("#000000")
-    gray    = lambda: Color.from_hex("#AAAAAA")
-    silver  = lambda: Color.from_hex("#DDDDDD")
-    white   = lambda: Color.from_hex("#FFFFFF")
-    navy    = lambda: Color.from_hex("#001F3F")
-    blue    = lambda: Color.from_hex("#0074D9")
-    aqua    = lambda: Color.from_hex("#7fDBFF")
-    teal    = lambda: Color.from_hex("#39CCCC")
-    eastern = lambda: Color.from_hex("#239DAD")
-    purple  = lambda: Color.from_hex("#B10DC9")
-    fuchsia = lambda: Color.from_hex("#F012BE")
-    maroon  = lambda: Color.from_hex("#85144B")
-    red     = lambda: Color.from_hex("#FF4136")
-    orange  = lambda: Color.from_hex("#FF851B")
-    yellow  = lambda: Color.from_hex("#FFDC00")
-    olive   = lambda: Color.from_hex("#3D9970")
-    green   = lambda: Color.from_hex("#2ECC40")
-    lime    = lambda: Color.from_hex("#01FF70")
+    none    = lambda: Color.set_hex("#00000000")
+    black   = lambda: Color.set_hex("#000000")
+    gray    = lambda: Color.set_hex("#AAAAAA")
+    silver  = lambda: Color.set_hex("#DDDDDD")
+    white   = lambda: Color.set_hex("#FFFFFF")
+    navy    = lambda: Color.set_hex("#001F3F")
+    blue    = lambda: Color.set_hex("#0074D9")
+    aqua    = lambda: Color.set_hex("#7fDBFF")
+    teal    = lambda: Color.set_hex("#39CCCC")
+    eastern = lambda: Color.set_hex("#239DAD")
+    purple  = lambda: Color.set_hex("#B10DC9")
+    fuchsia = lambda: Color.set_hex("#F012BE")
+    maroon  = lambda: Color.set_hex("#85144B")
+    red     = lambda: Color.set_hex("#FF4136")
+    orange  = lambda: Color.set_hex("#FF851B")
+    yellow  = lambda: Color.set_hex("#FFDC00")
+    olive   = lambda: Color.set_hex("#3D9970")
+    green   = lambda: Color.set_hex("#2ECC40")
+    lime    = lambda: Color.set_hex("#01FF70")
