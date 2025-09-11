@@ -51,7 +51,7 @@ class Module(CoreModule):
     @property
     def document(self) -> 'Document':
         # Note: While this might seem inefficient, propagating a document
-        # reference makes deepcopy objects to run __del__ many times
+        # reference makes deepcopied objects to run __del__ many times!
         from typenaut.document import Document
         while not isinstance(self, Document):
             self = self.parent

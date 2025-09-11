@@ -25,7 +25,23 @@ def mkdir(path: Path) -> Path:
 
 @define
 class hybridmethod:
-    """Automatically make a 'self' instance if called as a classmethod"""
+    """
+    Automatically make a 'self' instance if called as a classmethod
+
+    Example:
+    ```python
+    class Angle:
+
+        @hybridmethod
+        def degrees(self, value: float) -> Self:
+            self.value = value
+            return self
+
+    # Smart fluent interfaces
+    angle = Angle().degrees(90)
+    angle = Angle.degrees(90)
+    ```
+    """
     method: callable
 
     def __get__(self, this: Self, cls: type) -> callable:
