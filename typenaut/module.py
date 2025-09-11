@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 # ---------------------------------------------------------------------------- #
 
-@define
+@define(slots=False)
 class CoreModule(ABC):
     """Base module class that outputs some typst code"""
 
@@ -36,7 +36,7 @@ class CoreModule(ABC):
 
 # ---------------------------------------------------------------------------- #
 
-@define
+@define(slots=False)
 class Module(CoreModule):
 
     parent: Optional[Self] = field(default=None, repr=False)
@@ -80,7 +80,7 @@ class Module(CoreModule):
 
 # ---------------------------------------------------------------------------- #
 
-@define
+@define(slots=False)
 class Composite(Module):
     """A module which may contain other ones within"""
 
@@ -109,8 +109,8 @@ class Composite(Module):
 
 # ---------------------------------------------------------------------------- #
 
-@define
-class Labeled(Module):
+@define(slots=False)
+class Labeled:
 
     label: UUID = Factory(uuid4)
     """Unique identifier for the module"""

@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any, Iterable, Optional
 
 from attrs import Factory, define
@@ -18,6 +19,8 @@ class Function(CoreModule):
 
         if (value is None):
             return ""
+        elif isinstance(value, Path):
+            return f'"{value}"'
         elif isinstance(value, str):
             return f'{value}'
         elif isinstance(value, bool):
@@ -46,9 +49,11 @@ class Function(CoreModule):
             if (value is not None):
                 yield f"  {key}: {self.any2typ(value)},"
 
-        yield ")["
         if (self.body is not None):
+            yield ")["
             for item in filter(None, self.body):
                 yield self.any2typ(item)
-        yield "]"
+            yield "]"
+        else:
+            yield ")"
 
