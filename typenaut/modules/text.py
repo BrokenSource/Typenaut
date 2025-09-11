@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from enum import Enum
 from functools import partial
-from typing import Literal, Union
+from typing import Literal, Self, Union
 
 from attrs import Factory, define
 
@@ -29,7 +29,11 @@ class Text(Module):
 
     color: Color = Factory(color.black)
 
-    weight: Union[Literal["regular", "bold"], int] = '"regular"'
+    weight: Union[Literal["regular", "bold"], int] = 'regular'
+
+    def bold(self) -> Self:
+        self.weight = 'bold'
+        return self
 
     def typst(self) -> Iterable[str]:
         yield from Function(
@@ -37,7 +41,7 @@ class Text(Module):
             kwargs=dict(
                 font=self.font,
                 fill=self.color,
-                weight=self.weight,
+                weight=f'"{self.weight}"',
             ),
             body=[self.value],
         ).call()
