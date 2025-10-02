@@ -1,4 +1,4 @@
 from typenaut.core import *
-from typenaut.document import Document
-from typenaut.module import Composite, Labeled, Module
+from typenaut.document import *
+from typenaut.module import *
 from typenaut.modules import *

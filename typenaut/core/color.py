@@ -148,7 +148,6 @@ class Color(CoreModule):
         self.red, self.green, self.blue, self.alpha, *_ = color
         return self
 
-    @property
     def get_hex(self) -> str:
         """Get the color as a hex string"""
         return ("#"
@@ -197,60 +196,66 @@ class Color(CoreModule):
         self.alpha = alpha
         return self
 
-    def as_hsl(self) -> tuple[float, float, float]:
+    def get_hsl(self) -> tuple[float, float, float]:
         return colorsys.rgb_to_hls(self.red, self.green, self.blue)
 
-    hsl = property(as_hsl, unpacked(set_hsl))
+    hsl = property(get_hsl, unpacked(set_hsl))
 
     # -------------------------------- #
-    # Shared and unique components of HSV, HSL
+    # Components of HSV, HSL
 
     # Hue
 
-    @property
-    def hue(self) -> float:
-        return self.hsv[0]
-
-    @hue.setter
-    def hue(self, value: float):
+    @hybridmethod
+    def set_hue(self, value: float) -> Self:
         self.set_hsv(value, self.saturation, self.brightness)
+        return self
+
+    def get_hue(self) -> float:
+        return self.get_hsv()[0]
+
+    hue = property(get_hue, set_hue)
 
     # Saturation
 
-    @property
-    def saturation(self) -> float:
+    @hybridmethod
+    def set_saturation(self, value: float) -> Self:
+        self.set_hsv(self.hue, value, self.brightness)
+        return self
+
+    def get_saturation(self) -> float:
         return self.get_hsv()[1]
 
-    @saturation.setter
-    def saturation(self, value: float):
-        self.set_hsv(self.hue, value, self.brightness)
+    saturation = property(get_saturation, set_saturation)
 
     # Brightness
 
-    @property
-    def brightness(self) -> float:
-        """Zero is black, one is full color"""
+    @hybridmethod
+    def set_brightness(self, value: float) -> Self:
+        self.set_hsv(self.hue, self.saturation, value)
+        return self
+
+    def get_brightness(self) -> float:
         return self.get_hsv()[2]
 
-    @brightness.setter
-    def brightness(self, value: float):
-        self.set_hsv(self.hue, self.saturation, value)
+    brightness = property(get_brightness, set_brightness)
 
     # Lightness
 
-    @property
-    def lightness(self) -> float:
-        """Zero is black, one is white"""
-        return self.get_hls()[1]
+    @hybridmethod
+    def set_lightness(self, value: float) -> Self:
+        self.set_hsl(self.hue, self.saturation, value)
+        return self
 
-    @lightness.setter
-    def lightness(self, value: float):
-        self.set_hls(self.hue, value, self.saturation)
+    def get_lightness(self) -> float:
+        return self.get_hsl()[1]
+
+    lightness = property(get_lightness, set_lightness)
 
     # -------------------------------- #
     # Special
 
-    def negate(self) -> Self:
+    def invert(self) -> Self:
         self.red   = (1.0 - self.red)
         self.green = (1.0 - self.green)
         self.blue  = (1.0 - self.blue)

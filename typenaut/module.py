@@ -9,6 +9,13 @@ from attrs import Factory, define, field
 if TYPE_CHECKING:
     from typenaut.document import Document
 
+__all__ = [
+    "CoreModule",
+    "Module",
+    "Composite",
+    "Labeled",
+]
+
 # ---------------------------------------------------------------------------- #
 
 @define(slots=False)
