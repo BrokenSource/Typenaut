@@ -4,26 +4,26 @@ from typing import Iterable, Self
 from attrs import Attribute, define, field
 
 from typenaut.module import CoreModule
-from typenaut.utils import StaticClass, clamp, hybridmethod
+from typenaut.utils import StaticClass, clamp, hybridmethod, unpacked
 
 # ---------------------------------------------------------------------------- #
 
-def _clamp_color(self, attribute: Attribute, value: float) -> float:
+def __clamp_color__(self, _: Attribute, value: float) -> float:
     return clamp(value, 0.0, 1.0)
 
 @define
 class Color(CoreModule):
 
-    red: float = field(default=0.0, on_setattr=_clamp_color)
+    red: float = field(default=0.0, on_setattr=__clamp_color__)
     """Normalized red component value"""
 
-    green: float = field(default=0.0, on_setattr=_clamp_color)
+    green: float = field(default=0.0, on_setattr=__clamp_color__)
     """Normalized green component value"""
 
-    blue: float = field(default=0.0, on_setattr=_clamp_color)
+    blue: float = field(default=0.0, on_setattr=__clamp_color__)
     """Normalized blue component value"""
 
-    alpha: float = field(default=1.0, on_setattr=_clamp_color)
+    alpha: float = field(default=1.0, on_setattr=__clamp_color__)
     """Normalized alpha component value"""
 
     # -------------------------------- #
@@ -72,8 +72,7 @@ class Color(CoreModule):
     def get_rgb(self) -> tuple[float, float, float]:
         return (self.red, self.green, self.blue)
 
-    # Fixme (setter): How to unpack a setter?
-    rgb = property(get_rgb)
+    rgb = property(get_rgb, unpacked(set_rgb))
 
     @hybridmethod
     def set_rgb_u8(self,
@@ -97,8 +96,7 @@ class Color(CoreModule):
             int(255*self.blue),
         )
 
-    # Fixme (setter): How to unpack a setter?
-    rgb_u8 = property(get_rgb_u8)
+    rgb_u8 = property(get_rgb_u8, unpacked(set_rgb_u8))
 
     # -------------------------------- #
     # LUMA
@@ -181,8 +179,7 @@ class Color(CoreModule):
     def get_hsv(self) -> tuple[float, float, float]:
         return colorsys.rgb_to_hsv(self.red, self.green, self.blue)
 
-    # Fixme (setter): How to unpack a setter?
-    hsv = property(get_hsv, set_hsv)
+    hsv = property(get_hsv, unpacked(set_hsv))
 
     # -------------------------------- #
     # Hue, Saturation, Luminance (HSL)
@@ -203,8 +200,7 @@ class Color(CoreModule):
     def as_hsl(self) -> tuple[float, float, float]:
         return colorsys.rgb_to_hls(self.red, self.green, self.blue)
 
-    # Fixme (setter): How to unpack a setter?
-    hsl = property(as_hsl, set_hsl)
+    hsl = property(as_hsl, unpacked(set_hsl))
 
     # -------------------------------- #
     # Shared and unique components of HSV, HSL

@@ -1,7 +1,7 @@
 import functools
 from enum import Enum
 from pathlib import Path
-from typing import Any, Self, Union
+from typing import Any, Iterable, Self, Union
 
 from attrs import define
 
@@ -29,18 +29,18 @@ class hybridmethod:
     Automatically make a 'self' instance if called as a classmethod
 
     Example:
-    ```python
-    class Angle:
+        ```python
+        class Angle:
 
-        @hybridmethod
-        def degrees(self, value: float) -> Self:
-            self.value = value
-            return self
+            @hybridmethod
+            def degrees(self, value: float) -> Self:
+                self.value = value
+                return self
 
-    # Smart fluent interfaces
-    angle = Angle().degrees(90)
-    angle = Angle.degrees(90)
-    ```
+        # Smart fluent interfaces
+        angle = Angle().degrees(90)
+        angle = Angle.degrees(90)
+        ```
     """
     method: callable
 
@@ -55,3 +55,30 @@ class hybridmethod:
 
     def __call__(self, this: Self, *args, **kwargs) -> Any:
         return self.method(this, *args, **kwargs)
+
+def unpacked(method: callable) -> callable:
+    """
+    Wraps a method to call with unpacked @property.setter arguments
+
+    Example:
+        ```python
+        class Color:
+            def get_rgb(self) -> tuple[float, float, float]:
+                return (self.r, self.g, self.b)
+
+            def set_rgb(self, r, g, b):
+                self.r, self.g, self.b = (r, g, b)
+
+            rgb = property(get_rgb, unpacked(set_rgb))
+
+        # Allows for using:
+        color = Color()
+        color.rgb = (1.0, 0.0, 0.0)
+        ```
+    """
+
+    @functools.wraps(method)
+    def wrapper(self, single: Iterable) -> Any:
+        return method(self, *single)
+
+    return wrapper

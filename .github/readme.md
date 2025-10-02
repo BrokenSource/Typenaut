@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/BrokenSource/Typenaut/main/typenaut/resources/images/logo.png" width="210">
   <h1 style="margin-top: 0">Typenaut</h1>
-  <p>Typst code from python classes abstractions</p>
+  <p>Typst documents from python classes</p>
   <a href="https://pypi.org/project/typenaut/"><img src="https://img.shields.io/pypi/v/typenaut?label=PyPI&color=blue"></a>
   <a href="https://pypi.org/project/typenaut/"><img src="https://img.shields.io/pypi/dw/typenaut?label=Installs&color=blue"></a>
   <a href="https://github.com/BrokenSource/Typenaut/"><img src="https://img.shields.io/github/v/tag/BrokenSource/Typenaut?label=GitHub&color=orange"></a>
@@ -16,7 +16,7 @@
 
 ## 🔥 Description
 
-A new experiment on typst metaprogramming within python for heavy templating.
+An experiment on [typst](https://typst.app/) metaprogramming within python for heavy templating.
 
 ```python
 from typenaut import Document, Rectangle, Text
