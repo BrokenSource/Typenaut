@@ -63,10 +63,10 @@ class Document(Composite):
     # Fixme: Possible with Rc<Workspace> across copies
 
     def __copy__(self, *ig, **nored) -> Exception:
-        raise TypeError(f"{Document.__name__} instances cannot be copied")
+        raise RuntimeError(f"{Document.__name__} instances cannot be copied")
 
     def __deepcopy__(self, *ig, **nored) -> Exception:
-        raise TypeError(f"{Document.__name__} instances cannot be deep-copied")
+        raise RuntimeError(f"{Document.__name__} instances cannot be deep-copied")
 
     # -------------------------------- #
 
