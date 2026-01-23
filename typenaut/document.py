@@ -2,9 +2,9 @@ import atexit
 import gc
 import shutil
 import subprocess
-import tempfile
 from collections.abc import Iterable
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Optional
 
 import typst
@@ -40,33 +40,15 @@ class Margin(Composite):
 class Document(Composite):
     margin: Margin = Factory(Margin, takes_self=True)
 
-    workspace: Path = Factory(lambda: Path(tempfile.mkdtemp(prefix=f"{__package__}-")))
+    _workspace: TemporaryDirectory = Factory(lambda: TemporaryDirectory(prefix=f"{__package__}-"))
     """Temporary directory to store document files, cleaned up on garbage collection"""
+
+    @property
+    def workspace(self) -> Path:
+        return Path(self._workspace.name)
 
     def __attrs_post_init__(self):
         Composite.__attrs_post_init__(self)
-
-    # -------------------------------- #
-    # Workspace management
-
-    def __del__(self):
-        """Cleanup the temporary directory on destruction"""
-        path = Path(tempfile.gettempdir())
-
-        # Triple check workspace is a parent of system tempdir (expected, enforced)
-        if (path == self.workspace) or (not self.workspace.is_relative_to(path)):
-            raise RuntimeError(f"Expected workspace path changed: {self.workspace}")
-
-        shutil.rmtree(self.workspace, ignore_errors=True)
-
-    # Cannot copy as it would run __del__ multiple times
-    # Fixme: Possible with Rc<Workspace> across copies
-
-    def __copy__(self, *ig, **nored) -> Exception:
-        raise RuntimeError(f"{Document.__name__} instances cannot be copied")
-
-    def __deepcopy__(self, *ig, **nored) -> Exception:
-        raise RuntimeError(f"{Document.__name__} instances cannot be deep-copied")
 
     # -------------------------------- #
 
